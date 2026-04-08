@@ -46,7 +46,9 @@ export async function convertModel(modelPath: string) {
             success: true,
             uri: `data:model/gltf-binary;base64,${base64}`,
             filename: `converted_${sourceFileName}`,
-            mimeType: "model/gltf-binary"
+            originalName: sourceFileName,
+            mimeType: "model/gltf-binary",
+            size: convertedFile.byteLength,
         }
     } catch (err) {
         console.error("Error processing file:", err);

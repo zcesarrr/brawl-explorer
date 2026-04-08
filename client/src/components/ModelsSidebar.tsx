@@ -3,10 +3,12 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, 
 
 type Props = {
     models: string[];
+    disabled?: boolean;
+    selectedModel?: string | null;
     onModelClick?: (modelName: string) => void;
 };
 
-export default function ModelsSidebar({ models, onModelClick }: Props) {
+export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel }: Props) {
     return (
         <Sidebar variant="inset">
             <SidebarContent>
@@ -16,7 +18,9 @@ export default function ModelsSidebar({ models, onModelClick }: Props) {
                         <SidebarMenu>
                             {models.map((item, index) => (
                                 <SidebarMenuItem key={index}>
-                                    <SidebarMenuButton
+                                    <SidebarMenuButton 
+                                        disabled={disabled || selectedModel === item} 
+                                        isActive={selectedModel === item}
                                         onClick={() => {
                                             if (onModelClick) onModelClick(item);
                                         }}

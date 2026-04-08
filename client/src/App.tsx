@@ -4,13 +4,14 @@ import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { LoaderCircle } from "lucide-react";
+import type { ModelParsed } from "./types/models.types";
 
 const API_URL = "http://localhost:3000/";
 
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<ModelParsed | null>(null);
   const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
 
   useEffect(() => {
@@ -57,7 +58,11 @@ export default function App() {
         console.error(json.error || "Request failed");
       }
 
-      setSelectedModel(json.data.uri);
+      setSelectedModel({
+        uri: json.data.uri,
+        filename: json.data.originalName,
+        size: json.data.size,
+      });
 
     } catch (err) {
       console.error(err);
@@ -68,7 +73,9 @@ export default function App() {
     <SidebarProvider className="relative">
       <ModelsSidebar 
         models={models} 
+        disabled={loadingModelViewer}
         onModelClick={(modelName) => handleModelClick(modelName)}
+        selectedModel={selectedModel ? selectedModel.filename : null}
       />
       <SidebarInset>
           <header className="p-2">
@@ -78,7 +85,7 @@ export default function App() {
           <div className="relative w-full h-full">
             {selectedModel && 
               <ModelViewer 
-                src={selectedModel}
+                src={selectedModel.uri}
                 loaded={() => setLoadingModelViewer(false)}
               />
             }
