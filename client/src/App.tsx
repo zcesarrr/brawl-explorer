@@ -8,7 +8,7 @@ import type { ModelParsed } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 
-const API_URL = "http://localhost:3000/";
+const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
