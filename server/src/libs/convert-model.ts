@@ -82,12 +82,10 @@ async function executePythonScript(input: string, output: string): Promise<Scrip
 
         py.stdout.on('data', (data) => {
             stdout += data.toString();
-            console.log(`Python stdout: ${data}`);
         });
 
         py.stderr.on('data', (data) => {
             stderr += data.toString();
-            console.error(`Python stderr: ${data}`);
         });
 
         py.on("close", code => {
