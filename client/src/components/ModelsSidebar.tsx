@@ -1,4 +1,3 @@
-import { ScrollArea } from "./ui/scroll-area";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 
 type Props = {
@@ -12,26 +11,25 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
     return (
         <Sidebar variant="inset">
             <SidebarContent>
-                <ScrollArea className="h-full">
-                    <SidebarGroup>
-                        <SidebarGroupLabel>Models</SidebarGroupLabel>
-                        <SidebarMenu>
-                            {models.map((item, index) => (
-                                <SidebarMenuItem key={index}>
-                                    <SidebarMenuButton 
-                                        disabled={disabled || selectedModel === item} 
-                                        isActive={selectedModel === item}
-                                        onClick={() => {
-                                            if (onModelClick) onModelClick(item);
-                                        }}
-                                    >
-                                        {item}
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroup>
-                </ScrollArea>
+                <SidebarGroup className="overflow-y-auto">
+                    <SidebarGroupLabel>Models</SidebarGroupLabel>
+                    <SidebarMenu>
+                        {models.map((item, index) => (
+                            <SidebarMenuItem key={index}>
+                                <SidebarMenuButton 
+                                    
+                                    disabled={disabled || selectedModel === item} 
+                                    isActive={selectedModel === item}
+                                    onClick={() => {
+                                        if (onModelClick) onModelClick(item);
+                                    }}
+                                >
+                                    <p className="truncate">{item}</p>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
             </SidebarContent>
         </Sidebar>
     );
