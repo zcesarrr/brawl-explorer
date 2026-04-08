@@ -4,11 +4,9 @@ import { existsSync } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 
-export async function convertModel(formData: FormData) {
+export async function convertModel(modelFile: File) {
     try {
-        const file = formData.get("file") as File;
-
-        if (!file) {
+        if (!modelFile) {
             return { 
                 success: false,
                 error: "No file provided"
@@ -16,17 +14,18 @@ export async function convertModel(formData: FormData) {
         }
 
         const tempDir = path.join(process.cwd(), 'temp');
+
         if (!existsSync(tempDir)) {
             await mkdir(tempDir, { recursive: true });
         }
 
         const uniqueId = randomUUID();
-        const inputFileName = `input_${uniqueId}${path.extname(file.name)}`;
+        const inputFileName = `input_${uniqueId}${path.extname(modelFile.name)}`;
         const outputFileName = `output_${uniqueId}.glb`;
         const inputPath = path.join(tempDir, inputFileName);
         const outputPath = path.join(tempDir, outputFileName);
 
-        const bytes = await file.arrayBuffer();
+        const bytes = await modelFile.arrayBuffer();
         const buffer = Buffer.from(bytes);
         await writeFile(inputPath, buffer);
 
@@ -51,21 +50,27 @@ export async function convertModel(formData: FormData) {
         return {
             success: true,
             data: base64,
-            filename: `converted_${file.name}`,
+            filename: `converted_${modelFile.name}`,
             mimeType: "model/gltf-binary"
         }
-    } catch (error) {
-        console.error("Error processing file:", error);
+    } catch (err) {
+        console.error("Error processing file:", err);
 
         return {
             success: false,
-            error: `Failed to process file: ${error.message}`
+            error: `Failed to process file: ${err}`
         };
     }
 }
 
-function executePythonScript(input, output) {
-    const pythonScript = path.join(process.cwd(), 'src/python/Supercell-Flat-Converter/main.py');
+type ScriptResult = {
+    success: boolean;
+    error?: string;
+    output?: string;
+};
+
+async function executePythonScript(input: string, output: string): Promise<ScriptResult> {
+    const pythonScript = path.join(process.cwd(), 'src/libs/supercell-flat-converter/main.py');
 
     return new Promise((resolve) => {
         const py = spawn("python3", [
