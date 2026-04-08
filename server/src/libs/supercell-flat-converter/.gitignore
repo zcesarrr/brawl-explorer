@@ -1,0 +1,10 @@
+*.pyc
+
+In-SC-glTF
+Out-SC-glTF
+In-glTF
+Out-glTF
+Out-Debug
+In-Debug
+test
+/In-SC-glTF_sc3d
