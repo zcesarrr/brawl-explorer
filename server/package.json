@@ -1,4 +1,10 @@
 {
+	"type": "module",
+	"scripts": {
+		"dev": "tsx --watch src/index.ts",
+		"build": "tsc",
+		"start": "node dist/index.js"
+	},
 	"devDependencies": {
 		"@types/node": "^25.5.2",
 		"tsx": "^4.21.0",
