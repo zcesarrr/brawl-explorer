@@ -1,6 +1,9 @@
 import express from "express";
 import type { Express, NextFunction, Request, Response } from "express";
 import multer from "multer";
+import fs from "fs/promises";
+
+const modelsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3d";
 
 const PORT = 3000;
 const upload = multer({ dest: "uploads/" });
@@ -8,9 +11,15 @@ const upload = multer({ dest: "uploads/" });
 const app: Express = express();
 app.disable('x-powered-by');
 
-app.get("/", (req: Request, res: Response) => {
-    res.status(200).json({
-        message: "Hello!",
+app.get("/", async (req: Request, res: Response) => {
+    const files = (await fs.readdir(modelsDirectory)).filter(file => file.endsWith("geo.glb"));
+
+    return res.status(200).json({
+        success: true,
+        data: {
+            results: files.length,
+            models: files,
+        },
     });
 });
 
