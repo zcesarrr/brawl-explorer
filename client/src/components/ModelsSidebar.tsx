@@ -3,9 +3,10 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, 
 
 type Props = {
     models: string[];
+    onModelClick?: (modelName: string) => void;
 };
 
-export default function ModelsSidebar({ models }: Props) {
+export default function ModelsSidebar({ models, onModelClick }: Props) {
     return (
         <Sidebar variant="inset">
             <SidebarContent>
@@ -15,7 +16,13 @@ export default function ModelsSidebar({ models }: Props) {
                         <SidebarMenu>
                             {models.map((item, index) => (
                                 <SidebarMenuItem key={index}>
-                                    <SidebarMenuButton>{item}</SidebarMenuButton>
+                                    <SidebarMenuButton
+                                        onClick={() => {
+                                            if (onModelClick) onModelClick(item);
+                                        }}
+                                    >
+                                        {item}
+                                    </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>

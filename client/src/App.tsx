@@ -9,6 +9,7 @@ const API_URL = "http://localhost:3000/";
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
+  const [selectedModel, setSelectedModel] = useState(null);
 
   useEffect(() => {
     const getModels = async () => {
@@ -36,7 +37,10 @@ export default function App() {
 
   return (
     <SidebarProvider className="relative">
-      <ModelsSidebar models={models} />
+      <ModelsSidebar 
+        models={models} 
+        onModelClick={(modelName) => console.log(modelName)}
+      />
       <SidebarInset>
           <header className="p-2">
             <SidebarTrigger size={"icon-lg"}/>
