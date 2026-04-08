@@ -44,7 +44,7 @@ export async function convertModel(modelPath: string) {
 
         return {
             success: true,
-            data: base64,
+            uri: `data:model/gltf-binary;base64,${base64}`,
             filename: `converted_${sourceFileName}`,
             mimeType: "model/gltf-binary"
         }

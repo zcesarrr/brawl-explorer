@@ -1,10 +1,14 @@
 import "@google/model-viewer";
 
-export default function ModelViewer() {
+type Props = {
+    src: string;
+};
+
+export default function ModelViewer({ src }: Props) {    
     return (
         <model-viewer 
             className="w-full h-full"
-            src="sirius_geo.glb" 
+            src={src}
             camera-controls 
             touch-action
         />

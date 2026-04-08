@@ -9,7 +9,7 @@ const API_URL = "http://localhost:3000/";
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
-  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
 
   useEffect(() => {
     const getModels = async () => {
@@ -35,18 +35,47 @@ export default function App() {
     getModels();
   }, []);
 
+  const handleModelClick = async (modelName: string) => {
+    try {
+      const res = await fetch(`${API_URL}parse-model`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: modelName,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        console.error(json.error || "Request failed");
+      }
+
+      setSelectedModel(json.data.uri);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <SidebarProvider className="relative">
       <ModelsSidebar 
         models={models} 
-        onModelClick={(modelName) => console.log(modelName)}
+        onModelClick={(modelName) => handleModelClick(modelName)}
       />
       <SidebarInset>
           <header className="p-2">
             <SidebarTrigger size={"icon-lg"}/>
           </header>
           <Separator />
-          <ModelViewer />
+          {selectedModel && 
+            <ModelViewer 
+              src={selectedModel}
+            />
+          }
       </SidebarInset>
       {loadingModels && 
         <div className="absolute left-0 top-0 w-full h-full bg-black/80 z-100 flex justify-center items-center">

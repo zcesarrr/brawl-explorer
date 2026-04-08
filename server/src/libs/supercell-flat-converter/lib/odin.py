@@ -302,6 +302,18 @@ class SupercellOdinGLTF:
                 attribute.type)
             attributes[attribute_name] = len(self.json["accessors"]) + i
 
+            if attribute_name == "POSITION":
+                position_values = attribute_buffers[i]
+                accessor = attribute_accessors[i]
+
+                # POSITION is expected to expose bounds in glTF.
+                if accessor.get("componentType") == 5126 and not np.issubdtype(position_values.dtype, np.floating):
+                    position_values = position_values.view(np.float32)
+
+                if position_values.size > 0:
+                    accessor["min"] = [float(value) for value in np.min(position_values, axis=0)]
+                    accessor["max"] = [float(value) for value in np.max(position_values, axis=0)]
+
             buffer_view = BufferView()
             buffer_view.data = attribute_buffers[i].tobytes()
             self.buffers.append(buffer_view)
