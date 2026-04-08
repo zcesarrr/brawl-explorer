@@ -1,5 +1,6 @@
 import ModelsSidebar from "./components/ModelsSidebar";
-import { Button } from "./components/ui/button";
+import ModelViewer from "./components/ModelViewer";
+import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 
 export default function App() {
@@ -7,11 +8,11 @@ export default function App() {
     <SidebarProvider>
       <ModelsSidebar />
       <SidebarInset>
-        <div className="p-2">
-          <SidebarTrigger size={"icon-lg"}/>
-          <h1>App</h1>
-          <Button>Press me!</Button>
-        </div>
+          <header className="p-2">
+            <SidebarTrigger size={"icon-lg"}/>
+          </header>
+          <Separator />
+          <ModelViewer />
       </SidebarInset>
     </SidebarProvider>
   );
