@@ -1,18 +1,21 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 
-export default function ModelsSidebar() {
+type Props = {
+    models: string[];
+};
+
+export default function ModelsSidebar({ models }: Props) {
     return (
         <Sidebar variant="inset">
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Models</SidebarGroupLabel>
                     <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton>Hola</SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton>Hola</SidebarMenuButton>
-                        </SidebarMenuItem>
+                        {models.map((item, index) => (
+                            <SidebarMenuItem key={index}>
+                                <SidebarMenuButton>{item}</SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>

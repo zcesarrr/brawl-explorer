@@ -1,5 +1,6 @@
 import express from "express";
 import type { Express, NextFunction, Request, Response } from "express";
+import cors from "cors";
 import fs from "fs/promises";
 import path from "path";
 import { convertModel } from "./libs/convert-model.js";
@@ -9,6 +10,10 @@ const modelsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3
 const PORT = 3000;
 
 const app: Express = express();
+app.use(cors({
+    origin: "http://localhost:5173",
+    optionsSuccessStatus: 200,
+}));
 app.disable('x-powered-by');
 app.use(express.json());
 
