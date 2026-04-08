@@ -81,12 +81,16 @@ export default function App() {
       <SidebarInset>
           <header className="flex p-2 items-center">
             <SidebarTrigger size={"icon-lg"}/>
-            {selectedModel && <Separator orientation="vertical" className="mx-1" />}
-            <div className="ml-1 flex gap-2">
-              <span>{selectedModel?.filename}</span>
-              ·
-              {selectedModel && <p>{getKbSize(selectedModel.size)}kb</p>}
-            </div>
+            {selectedModel && 
+              <>
+                <Separator orientation="vertical" className="mx-1" />
+                <div className="ml-1 flex gap-2">
+                  <span>{selectedModel.filename}</span>
+                  ·
+                  <p>{getKbSize(selectedModel.size)}kb</p>
+                </div>
+              </>
+            }
           </header>
           <Separator />
           <div className="relative w-full h-full">

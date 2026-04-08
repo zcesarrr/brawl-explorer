@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
+import { Input } from "./ui/input";
 
 const ROW_HEIGHT = 32;
 const OVERSCAN_ROWS = 8;
@@ -9,9 +10,10 @@ type Props = {
     disabled?: boolean;
     selectedModel?: string | null;
     onModelClick?: (modelName: string) => void;
+    onModelSearchChange?: (text: string) => void;
 };
 
-export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel }: Props) {
+export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel, onModelSearchChange }: Props) {
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const [scrollTop, setScrollTop] = useState(0);
     const [containerHeight, setContainerHeight] = useState(0);
@@ -52,11 +54,20 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
 
     return (
         <Sidebar variant="inset">
+            <SidebarHeader>
+                <Input 
+                    type="search" 
+                    placeholder="Search a model" 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+                        if (onModelSearchChange) onModelSearchChange(e.currentTarget.value);
+                    }}
+                />
+            </SidebarHeader>
             <SidebarContent className="overflow-hidden">
                 <div ref={scrollContainerRef} className="flex h-full min-h-0 flex-col overflow-auto">
                     <SidebarGroup className="min-h-full">
                         <SidebarGroupLabel>Models</SidebarGroupLabel>
-                        <SidebarMenu className="gap-0">
+                        <SidebarMenu className="gap-0.5">
                             {topSpacerHeight > 0 && (
                                 <li aria-hidden="true" className="pointer-events-none list-none" style={{ height: topSpacerHeight }} />
                             )}
