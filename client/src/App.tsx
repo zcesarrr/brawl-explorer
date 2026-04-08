@@ -35,7 +35,7 @@ export default function App() {
   }, []);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="relative">
       <ModelsSidebar models={models} />
       <SidebarInset>
           <header className="p-2">
@@ -44,6 +44,11 @@ export default function App() {
           <Separator />
           <ModelViewer />
       </SidebarInset>
+      {loadingModels && 
+        <div className="absolute left-0 top-0 w-full h-full bg-black/80 z-100 flex justify-center items-center">
+          <span className="text-4xl">Loading...</span>
+        </div>
+      }
     </SidebarProvider>
   );
 }
