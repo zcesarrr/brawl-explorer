@@ -1,15 +1,16 @@
 import express from "express";
 import type { Express, NextFunction, Request, Response } from "express";
-import multer from "multer";
 import fs from "fs/promises";
+import path from "path";
+import { convertModel } from "./libs/convert-model.js";
 
 const modelsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3d";
 
 const PORT = 3000;
-const upload = multer({ dest: "uploads/" });
 
 const app: Express = express();
 app.disable('x-powered-by');
+app.use(express.json());
 
 app.get("/", async (req: Request, res: Response) => {
     const files = (await fs.readdir(modelsDirectory)).filter(file => file.endsWith("geo.glb"));
@@ -23,23 +24,45 @@ app.get("/", async (req: Request, res: Response) => {
     });
 });
 
-app.post("/parse-model", upload.single("file"), async (req: Request, res: Response) => {
-    const file = req.file;
+app.post("/parse-model", async (req: Request, res: Response) => {
+    const { filename } = req.body as { filename?: string };
 
-    if (!file) {
+    if (!filename || typeof filename !== "string") {
         return res.status(400).json({
             success: false,
-            error: "No file received",
+            error: "filename is required",
+        });
+    }
+
+    const normalizedName = path.basename(filename);
+    if (normalizedName !== filename) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid filename",
+        });
+    }
+
+    const availableModels = (await fs.readdir(modelsDirectory)).filter(file => file.endsWith("geo.glb"));
+    if (!availableModels.includes(normalizedName)) {
+        return res.status(404).json({
+            success: false,
+            error: "Model not found",
+        });
+    }
+
+    const modelPath = path.join(modelsDirectory, normalizedName);
+    const result = await convertModel(modelPath);
+
+    if (!result.success) {
+        return res.status(500).json({
+            success: false,
+            error: result.error ?? "Failed to convert model",
         });
     }
 
     return res.status(200).json({
         success: true,
-        data: {
-            originalName: file.originalname,
-            filename: file.fieldname,
-            size: file.size,
-        }
+        data: result,
     });
 });
 

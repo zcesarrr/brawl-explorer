@@ -1,17 +1,19 @@
 import { spawn } from "child_process";
-import { writeFile, unlink, mkdir, readFile } from "fs/promises";
+import { unlink, mkdir, readFile, access } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 
-export async function convertModel(modelFile: File) {
+export async function convertModel(modelPath: string) {
     try {
-        if (!modelFile) {
+        if (!modelPath) {
             return { 
                 success: false,
-                error: "No file provided"
+                error: "No file path provided"
             };
         }
+
+        await access(modelPath);
 
         const tempDir = path.join(process.cwd(), 'temp');
 
@@ -20,19 +22,13 @@ export async function convertModel(modelFile: File) {
         }
 
         const uniqueId = randomUUID();
-        const inputFileName = `input_${uniqueId}${path.extname(modelFile.name)}`;
+        const sourceFileName = path.basename(modelPath);
         const outputFileName = `output_${uniqueId}.glb`;
-        const inputPath = path.join(tempDir, inputFileName);
         const outputPath = path.join(tempDir, outputFileName);
 
-        const bytes = await modelFile.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        await writeFile(inputPath, buffer);
-
-        const result = await executePythonScript(inputPath, outputPath);
+        const result = await executePythonScript(modelPath, outputPath);
 
         if (!result.success) {
-            await unlink(inputPath).catch(() => {});
             await unlink(outputPath).catch(() => {});
 
             return {
@@ -44,13 +40,12 @@ export async function convertModel(modelFile: File) {
         const convertedFile = await readFile(outputPath);
         const base64 = convertedFile.toString('base64');
 
-        await unlink(inputPath).catch(() => {});
         await unlink(outputPath).catch(() => {});
 
         return {
             success: true,
             data: base64,
-            filename: `converted_${modelFile.name}`,
+            filename: `converted_${sourceFileName}`,
             mimeType: "model/gltf-binary"
         }
     } catch (err) {
