@@ -5,7 +5,7 @@ import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { LoaderCircle } from "lucide-react";
 import type { ModelParsed } from "./types/models.types";
-import getKbSize from "./libs/models.utils";
+import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 
 const API_URL = "http://localhost:3000/";
@@ -92,7 +92,7 @@ export default function App() {
                 <div className="ml-1 flex gap-2">
                   <span>{selectedModel.filename}</span>
                   ·
-                  <p>{getKbSize(selectedModel.size)}kb</p>
+                  <p>{getAutoSizeString(selectedModel.size)}</p>
                 </div>
               </>
             }
@@ -115,7 +115,23 @@ export default function App() {
             <>
               <Separator />
               <footer className="p-2">
-                <Button variant="secondary" size="lg">Export</Button>
+                <Button 
+                  variant="secondary" 
+                  size="lg"
+                  disabled={loadingModelViewer}
+                  onClick={() => {
+                    const link = document.createElement("a");
+
+                    link.href = selectedModel.uri;
+                    link.download = selectedModel.filename;
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Export
+                </Button>
             </footer>
             </>
           }
