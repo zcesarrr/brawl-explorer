@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/s
 import { LoaderCircle } from "lucide-react";
 import type { ModelParsed } from "./types/models.types";
 import getKbSize from "./libs/models.utils";
+import { Button } from "./components/ui/button";
 
 const API_URL = "http://localhost:3000/";
 
@@ -110,6 +111,14 @@ export default function App() {
               </div>
             }
           </div>
+          {selectedModel && 
+            <>
+              <Separator />
+              <footer className="p-2">
+                <Button variant="secondary" size="lg">Export</Button>
+            </footer>
+            </>
+          }
       </SidebarInset>
       {loadingModels && 
         <div className="absolute left-0 top-0 w-full h-full bg-black/80 z-100 flex justify-center items-center">
