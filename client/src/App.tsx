@@ -5,6 +5,7 @@ import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { LoaderCircle } from "lucide-react";
 import type { ModelParsed } from "./types/models.types";
+import getKbSize from "./libs/models.utils";
 
 const API_URL = "http://localhost:3000/";
 
@@ -78,8 +79,14 @@ export default function App() {
         selectedModel={selectedModel ? selectedModel.filename : null}
       />
       <SidebarInset>
-          <header className="p-2">
+          <header className="flex p-2 items-center">
             <SidebarTrigger size={"icon-lg"}/>
+            {selectedModel && <Separator orientation="vertical" className="mx-1" />}
+            <div className="ml-1 flex gap-2">
+              <span>{selectedModel?.filename}</span>
+              ·
+              {selectedModel && <p>{getKbSize(selectedModel.size)}kb</p>}
+            </div>
           </header>
           <Separator />
           <div className="relative w-full h-full">
