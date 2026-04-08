@@ -10,6 +10,7 @@ export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
 
   useEffect(() => {
     const getModels = async () => {
@@ -36,6 +37,8 @@ export default function App() {
   }, []);
 
   const handleModelClick = async (modelName: string) => {
+    setLoadingModelViewer(true);
+
     try {
       const res = await fetch(`${API_URL}parse-model`, {
         method: "POST",
@@ -71,11 +74,19 @@ export default function App() {
             <SidebarTrigger size={"icon-lg"}/>
           </header>
           <Separator />
-          {selectedModel && 
-            <ModelViewer 
-              src={selectedModel}
-            />
-          }
+          <div className="relative w-full h-full">
+            {selectedModel && 
+              <ModelViewer 
+                src={selectedModel}
+                loaded={() => setLoadingModelViewer(false)}
+              />
+            }
+            {loadingModelViewer && 
+              <div className="absolute w-full h-full left-0 top-0 bg-black/90 flex justify-center items-center">
+                <span className="text-3xl">Loading...</span>
+              </div>
+            }
+          </div>
       </SidebarInset>
       {loadingModels && 
         <div className="absolute left-0 top-0 w-full h-full bg-black/80 z-100 flex justify-center items-center">
