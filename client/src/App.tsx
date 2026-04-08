@@ -3,6 +3,7 @@ import ModelsSidebar from "./components/ModelsSidebar";
 import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import { LoaderCircle } from "lucide-react";
 
 const API_URL = "http://localhost:3000/";
 
@@ -83,7 +84,7 @@ export default function App() {
             }
             {loadingModelViewer && 
               <div className="absolute w-full h-full left-0 top-0 bg-black/90 flex justify-center items-center">
-                <span className="text-3xl">Loading...</span>
+                <LoaderCircle className="animate-spin" size={48} />
               </div>
             }
           </div>
