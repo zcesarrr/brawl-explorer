@@ -14,6 +14,9 @@ export default function App() {
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
   const [selectedModel, setSelectedModel] = useState<ModelParsed | null>(null);
   const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
+  const [modelSearch, setModelSearch] = useState<string>("");
+
+  const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()));
 
   useEffect(() => {
     const getModels = async () => {
@@ -73,10 +76,11 @@ export default function App() {
   return (
     <SidebarProvider className="relative">
       <ModelsSidebar 
-        models={models} 
+        models={filteredModels} 
         disabled={loadingModelViewer}
         onModelClick={(modelName) => handleModelClick(modelName)}
         selectedModel={selectedModel ? selectedModel.filename : null}
+        onModelSearchChange={(text) => setModelSearch(text)}
       />
       <SidebarInset>
           <header className="flex p-2 items-center">

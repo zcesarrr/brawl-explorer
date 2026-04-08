@@ -80,7 +80,7 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                                             if (onModelClick) onModelClick(item);
                                         }}
                                     >
-                                        <p className="truncate">{item}</p>
+                                        <p className="truncate">{item.split("_geo.glb")[0]}</p>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
