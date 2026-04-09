@@ -70,7 +70,10 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup className="overflow-y-auto">
-                    <SidebarGroupLabel>Models</SidebarGroupLabel>
+                    <SidebarGroupLabel className="flex gap-1 items-center justify-between">
+                        Models
+                        <span className="text-neutral-500 text-[10px]">{models.length} results</span>
+                    </SidebarGroupLabel>
                     <SidebarMenu className="gap-1">
                         {modelsFiltered.map((item, index) => (
                             <SidebarMenuItem key={item}>

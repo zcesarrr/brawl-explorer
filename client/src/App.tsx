@@ -3,11 +3,12 @@ import ModelsSidebar from "./components/ModelsSidebar";
 import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Moon, Sun } from "lucide-react";
 import type { ModelParsed } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 import Presentation from "./components/Presentation";
+import { useTheme } from "./components/theme-provider";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 
@@ -17,6 +18,8 @@ export default function App() {
   const [selectedModel, setSelectedModel] = useState<ModelParsed | null>(null);
   const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
   const [modelSearch, setModelSearch] = useState<string>("");
+
+  const theme = useTheme();
 
   const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()));
 
@@ -85,20 +88,16 @@ export default function App() {
         onModelSearchChange={(text) => setModelSearch(text)}
       />
       <SidebarInset>
-          <header className="flex p-2 items-center overflow-x-auto overflow-y-hidden">
-            <SidebarTrigger size={"icon-lg"}/>
-            {selectedModel && 
-              <>
-                <Separator orientation="vertical" className="mx-1" />
-                <div className="ml-1 flex gap-2">
+          {selectedModel && 
+            <>
+              <header className="flex gap-2 p-2 items-center overflow-x-auto overflow-y-hidden">
                   <span>{selectedModel.filename}</span>
                   ·
                   <p>{getAutoSizeString(selectedModel.size)}</p>
-                </div>
-              </>
-            }
-          </header>
-          <Separator />
+              </header>
+              <Separator />
+            </>
+          }
           <div className="relative w-full h-full">
             {selectedModel ? 
               <ModelViewer 
@@ -115,11 +114,24 @@ export default function App() {
               </div>
             }
           </div>
-          {selectedModel && 
-            <>
-              <Separator />
-              <footer className="p-2">
+          <Separator />
+          <footer className="flex items-center p-2">
+            <SidebarTrigger size={"icon-lg"}/>
+            <Button 
+              variant="ghost" 
+              size="icon-lg"
+              onClick={() => {
+                if (theme.theme === "light") theme.setTheme("dark");
+                else theme.setTheme("light");
+              }}
+            >
+              {theme.theme === "dark" ? <Moon /> : <Sun />}
+            </Button>
+            {selectedModel && 
+              <>
+                <Separator orientation="vertical" className="mx-1"/>
                 <Button 
+                  className="ml-0.5"
                   variant="secondary" 
                   size="lg"
                   disabled={loadingModelViewer}
@@ -136,9 +148,9 @@ export default function App() {
                 >
                   Export Model
                 </Button>
-            </footer>
-            </>
-          }
+              </>
+            }
+          </footer>
       </SidebarInset>
       {loadingModels && 
         <div className="absolute left-0 top-0 w-full h-full bg-black/80 z-100 flex justify-center items-center">
