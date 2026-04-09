@@ -220,7 +220,7 @@ export default function App() {
                         
                       }}
                     >
-                      Load Texture
+                      Search Texture
                     </Button>
                     <Button 
                       variant="secondary" 
