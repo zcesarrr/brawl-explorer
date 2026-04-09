@@ -7,8 +7,9 @@ import cors from "cors";
 import fs from "fs/promises";
 import path from "path";
 import { convertModel } from "./libs/convert-model.js";
+import { convertTexture } from "./libs/convert-texture.js";
 
-const modelsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3d";
+const assetsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3d";
 
 const PORT = Number(process.env.PORT);
 
@@ -22,7 +23,7 @@ app.use(express.json());
 app.use(helmet());
 
 app.get("/", async (req: Request, res: Response) => {
-    const files = (await fs.readdir(modelsDirectory)).filter(file => file.endsWith("geo.glb"));
+    const files = (await fs.readdir(assetsDirectory)).filter(file => file.endsWith("geo.glb"));
 
     return res.status(200).json({
         success: true,
@@ -51,7 +52,7 @@ app.post("/parse-model", async (req: Request, res: Response) => {
         });
     }
 
-    const availableModels = (await fs.readdir(modelsDirectory)).filter(file => file.endsWith("geo.glb"));
+    const availableModels = (await fs.readdir(assetsDirectory)).filter(file => file.endsWith("geo.glb"));
     if (!availableModels.includes(normalizedName)) {
         return res.status(404).json({
             success: false,
@@ -59,13 +60,55 @@ app.post("/parse-model", async (req: Request, res: Response) => {
         });
     }
 
-    const modelPath = path.join(modelsDirectory, normalizedName);
+    const modelPath = path.join(assetsDirectory, normalizedName);
     const result = await convertModel(modelPath);
 
     if (!result.success) {
         return res.status(500).json({
             success: false,
             error: result.error ?? "Failed to convert model",
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: result,
+    });
+});
+
+app.post("/parse-texture", async (req: Request, res: Response) => {
+    const { filename } = req.body as { filename?: string };
+
+    if (!filename || typeof filename !== "string") {
+        return res.status(400).json({
+            success: false,
+            error: "filename is required",
+        });
+    }
+
+    const normalizedName = path.basename(filename);
+    if (normalizedName !== filename) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid filename",
+        });
+    }
+
+    const availableTextures = (await fs.readdir(assetsDirectory)).filter(file => file.endsWith("tex.sctx"));
+    if (!availableTextures.includes(normalizedName)) {
+        return res.status(404).json({
+            success: false,
+            error: "Texture not found",
+        });
+    }
+
+    const texturePath = path.join(assetsDirectory, normalizedName);
+    const result = await convertTexture(texturePath);
+
+    if (!result.success) {
+        return res.status(500).json({
+            success: false,
+            error: result.error ?? "Failed to convert texture",
         });
     }
 
