@@ -98,7 +98,7 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
             <SidebarFooter>
                 <Pagination>
                     <PaginationContent>
-                        {getPaginationWindow().map(item => (
+                        {getPaginationWindow().length > 1 && getPaginationWindow().map(item => (
                             <PaginationItem key={item}>
                                 <PaginationLink 
                                     size="default" 

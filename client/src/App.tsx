@@ -152,7 +152,10 @@ export default function App() {
               <div className="relative w-full h-full">
                 <ModelViewer 
                   src={selectedModel.uri}
-                  loaded={() => setLoadingModelViewer(false)}
+                  loaded={() => { 
+                    setLoadingModelViewer(false)
+                    //handleLoadTexture();
+                  }}
                   textureData={textureLoaded}
                 />
                 <Button 
