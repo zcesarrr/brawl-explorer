@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import express from "express";
 import type { Express, NextFunction, Request, Response } from "express";
 import helmet from "helmet";
@@ -8,11 +10,11 @@ import { convertModel } from "./libs/convert-model.js";
 
 const modelsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3d";
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT);
 
 const app: Express = express();
 app.use(cors({
-    origin: ["http://localhost:5173", "http://192.168.50.28:5173"],
+    origin: process.env.ORIGIN_ALLOWED?.split(","),
     optionsSuccessStatus: 200,
 }));
 app.disable('x-powered-by');
@@ -89,6 +91,4 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Listening on http://localhost:${PORT}`);
-});
+app.listen(PORT, "0.0.0.0");
