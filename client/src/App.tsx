@@ -12,6 +12,7 @@ import { useTheme } from "./components/theme-provider";
 import { toast, Toaster, useSonner } from "sonner";
 import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
 import { Checkbox } from "./components/ui/checkbox";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -212,16 +213,28 @@ export default function App() {
                   <Separator orientation="vertical" className="ml-1 mr-1.5"/>
                   {loadingTexture && <LoaderCircle className="animate-spin mr-1" size={16}/>}
                   <div className="flex gap-1 items-center">
-                    <Button 
-                      variant="secondary" 
-                      size="lg"
-                      disabled={loadingModelViewer || loadingTexture}
-                      onClick={() => {
-                        
-                      }}
-                    >
-                      Search Texture
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="secondary" 
+                          size="lg"
+                          disabled={loadingModelViewer || loadingTexture}
+                        >
+                          Search Texture
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Search a Texture</DialogTitle>
+                          <DialogDescription>Choose a texture to apply from this list</DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button>Close</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                     <Button 
                       variant="secondary" 
                       size="lg"
