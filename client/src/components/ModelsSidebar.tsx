@@ -43,8 +43,6 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                     type="search" 
                     placeholder="Search a model" 
                     onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-                        e.preventDefault();
-
                         if (onModelSearchChange) onModelSearchChange(e.currentTarget.value);
                     }}
                 />
