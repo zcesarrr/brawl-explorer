@@ -7,7 +7,7 @@ import { TooltipProvider } from './components/ui/tooltip.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
+    <ThemeProvider defaultTheme="system">
       <TooltipProvider>
         <App />
       </TooltipProvider>

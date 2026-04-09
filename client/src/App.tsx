@@ -7,6 +7,7 @@ import { LoaderCircle } from "lucide-react";
 import type { ModelParsed } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
+import Presentation from "./components/Presentation";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 
@@ -99,11 +100,14 @@ export default function App() {
           </header>
           <Separator />
           <div className="relative w-full h-full">
-            {selectedModel && 
+            {selectedModel ? 
               <ModelViewer 
                 src={selectedModel.uri}
                 loaded={() => setLoadingModelViewer(false)}
               />
+              :
+              !loadingModelViewer && 
+              <Presentation />
             }
             {loadingModelViewer && 
               <div className="absolute w-full h-full left-0 top-0 bg-black/90 flex justify-center items-center">
@@ -130,7 +134,7 @@ export default function App() {
                     document.body.removeChild(link);
                   }}
                 >
-                  Export
+                  Export Model
                 </Button>
             </footer>
             </>

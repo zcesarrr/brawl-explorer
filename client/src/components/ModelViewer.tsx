@@ -29,7 +29,7 @@ export default function ModelViewer({ src, loaded }: Props) {
     return (
         <model-viewer 
             ref={modelViewerRef}
-            className="w-full h-full"
+            className="w-full h-full bg-neutral-800"
             src={src}
             camera-controls 
             touch-action
