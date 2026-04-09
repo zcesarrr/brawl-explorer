@@ -194,7 +194,7 @@ export default function App() {
             }
           </div>
           <Separator />
-          <footer className="flex items-center p-2">
+          <footer className="flex items-center p-2 overflow-x-auto overflow-y-hidden">
             <div className="flex flex-1 items-center">
               <SidebarTrigger size={"icon-lg"}/>
               <Button 
@@ -210,7 +210,18 @@ export default function App() {
               {selectedModel && 
                 <>
                   <Separator orientation="vertical" className="ml-1 mr-1.5"/>
-                  <div className="flex gap-2 items-center">
+                  {loadingTexture && <LoaderCircle className="animate-spin mr-1" size={16}/>}
+                  <div className="flex gap-1 items-center">
+                    <Button 
+                      variant="secondary" 
+                      size="lg"
+                      disabled={loadingModelViewer || loadingTexture}
+                      onClick={() => {
+                        
+                      }}
+                    >
+                      Load Texture
+                    </Button>
                     <Button 
                       variant="secondary" 
                       size="lg"
@@ -220,9 +231,8 @@ export default function App() {
                       }}
                     >
                       Auto Texture
-                      {loadingTexture && <LoaderCircle className="animate-spin"/>}
                     </Button>
-                    <FieldGroup className="w-32">
+                    <FieldGroup className="w-32 ml-1">
                       <Field orientation="horizontal">
                         <Checkbox 
                           id="auto-load-texture" 
@@ -244,13 +254,16 @@ export default function App() {
               }
             </div>
             {selectedModel && 
-              <Button 
-                variant="ghost" 
-                size="icon-lg"
-                onClick={() => setSelectedModel(null)}
-              >
-                <Info />
-              </Button>
+              <>
+                <Separator orientation="vertical" className="mx-1"/>
+                <Button 
+                  variant="ghost" 
+                  size="icon-lg"
+                  onClick={() => setSelectedModel(null)}
+                >
+                  <Info />
+                </Button>
+              </>
             }
           </footer>
       </SidebarInset>
