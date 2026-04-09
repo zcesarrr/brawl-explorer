@@ -68,9 +68,11 @@ type ScriptResult = {
 
 async function executePythonScript(input: string, output: string): Promise<ScriptResult> {
     const pythonScript = path.join(process.cwd(), 'src/libs/supercell-flat-converter/main.py');
+    const pythonExecutable = process.env.PYTHON_EXECUTABLE
+        || (process.platform === "win32" ? "python" : "python3");
 
     return new Promise((resolve) => {
-        const py = spawn("python3", [
+        const py = spawn(pythonExecutable, [
             pythonScript,
             "decode",
             "-i",
@@ -96,7 +98,7 @@ async function executePythonScript(input: string, output: string): Promise<Scrip
             } else {
                 resolve({
                     success: false,
-                    error: `Python script failed with code ${code}: ${stderr}`
+                    error: `Python script failed with code ${code} using "${pythonExecutable}": ${stderr || stdout}`
                 });
             }
         });

@@ -9,7 +9,7 @@ import path from "path";
 import { convertModel } from "./libs/convert-model.js";
 import { convertTexture } from "./libs/convert-texture.js";
 
-const assetsDirectory = "/home/CesarZ/Desktop/install_time_asset_pack/assets/sc3d";
+const assetsDirectory = process.env.ASSETS_DIRECTORY || "";
 
 const PORT = Number(process.env.PORT);
 

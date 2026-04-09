@@ -82,26 +82,26 @@ async function executeSctxDecode(input: string, output: string): Promise<ScriptR
     }
 
     return new Promise((resolve) => {
-        const py = spawn("wine", [
-            converterPath,
-            "decode",
-            "-t",
-            input,
-            output,
-        ]);
+        const isWindows = process.platform === "win32";
+        const command = isWindows ? converterPath : "wine";
+        const args = isWindows
+            ? ["decode", "-t", input, output]
+            : [converterPath, "decode", "-t", input, output];
+
+        const converterProcess = spawn(command, args);
 
         let stdout = '';
         let stderr = '';
 
-        py.stdout.on('data', (data) => {
+        converterProcess.stdout.on('data', (data) => {
             stdout += data.toString();
         });
 
-        py.stderr.on('data', (data) => {
+        converterProcess.stderr.on('data', (data) => {
             stderr += data.toString();
         });
 
-        py.on("close", code => {
+        converterProcess.on("close", code => {
             if (code === 0) {
                 resolve({ success: true, output: stdout });
             } else {
@@ -112,10 +112,10 @@ async function executeSctxDecode(input: string, output: string): Promise<ScriptR
             }
         });
 
-        py.on('error', (error) => {
+        converterProcess.on('error', (error) => {
             resolve({
                 success: false,
-                error: `Failed to start SCTX converter with wine: ${error.message}`
+                error: `Failed to start SCTX converter (${command}): ${error.message}`
             });
         });
     });
