@@ -141,11 +141,31 @@ export default function App() {
           }
           <div className="relative w-full h-full">
             {selectedModel ? 
-              <ModelViewer 
-                src={selectedModel.uri}
-                loaded={() => setLoadingModelViewer(false)}
-                textureData={textureLoaded}
-              />
+              <div className="relative w-full h-full">
+                <ModelViewer 
+                  src={selectedModel.uri}
+                  loaded={() => setLoadingModelViewer(false)}
+                  textureData={textureLoaded}
+                />
+                <Button 
+                  className="absolute left-2 bottom-2"
+                  variant="default" 
+                  size="lg"
+                  disabled={loadingModelViewer}
+                  onClick={() => {
+                    const link = document.createElement("a");
+
+                    link.href = selectedModel.uri;
+                    link.download = selectedModel.filename;
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Export Model
+                </Button>
+              </div>
               :
               !loadingModelViewer && 
               <Presentation />
@@ -184,23 +204,6 @@ export default function App() {
                     >
                       Auto Texture
                       {loadingTexture && <LoaderCircle className="animate-spin"/>}
-                    </Button>
-                    <Button 
-                      variant="secondary" 
-                      size="lg"
-                      disabled={loadingModelViewer}
-                      onClick={() => {
-                        const link = document.createElement("a");
-
-                        link.href = selectedModel.uri;
-                        link.download = selectedModel.filename;
-
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                    >
-                      Export Model
                     </Button>
                   </div>
                 </>
