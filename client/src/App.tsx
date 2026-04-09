@@ -10,6 +10,8 @@ import { Button } from "./components/ui/button";
 import Presentation from "./components/Presentation";
 import { useTheme } from "./components/theme-provider";
 import { toast, Toaster, useSonner } from "sonner";
+import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
+import { Checkbox } from "./components/ui/checkbox";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 
@@ -21,6 +23,7 @@ export default function App() {
   const [modelSearch, setModelSearch] = useState<string>("");
   const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
   const [loadingTexture, setLoadingTexture] = useState<boolean>(false);
+  const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
 
   const theme = useTheme();
   const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()));
@@ -131,7 +134,7 @@ export default function App() {
     <SidebarProvider className="relative">
       <ModelsSidebar 
         models={filteredModels} 
-        disabled={loadingModelViewer}
+        disabled={loadingModelViewer || loadingTexture}
         onModelClick={(modelName) => handleModelClick(modelName)}
         selectedModel={selectedModel ? selectedModel.filename : null}
         onModelSearchChange={(text) => setModelSearch(text)}
@@ -154,7 +157,7 @@ export default function App() {
                   src={selectedModel.uri}
                   loaded={() => { 
                     setLoadingModelViewer(false)
-                    //handleLoadTexture();
+                    if (autoLoadTexture) handleLoadTexture();
                   }}
                   textureData={textureLoaded}
                 />
@@ -204,7 +207,7 @@ export default function App() {
               {selectedModel && 
                 <>
                   <Separator orientation="vertical" className="ml-1 mr-1.5"/>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2 items-center">
                     <Button 
                       variant="secondary" 
                       size="lg"
@@ -216,6 +219,19 @@ export default function App() {
                       Auto Texture
                       {loadingTexture && <LoaderCircle className="animate-spin"/>}
                     </Button>
+                    <FieldGroup className="w-32">
+                      <Field orientation="horizontal">
+                        <Checkbox 
+                          id="auto-load-texture" 
+                          checked={autoLoadTexture} 
+                          onCheckedChange={(checked) => {
+                            setAutoLoadTexture(checked === true);
+                            if (checked === true) handleLoadTexture();
+                          }} 
+                        />
+                        <FieldLabel htmlFor="auto-load-texture">Auto load texture</FieldLabel>
+                      </Field>
+                    </FieldGroup>
                   </div>
                 </>
               }
@@ -231,7 +247,12 @@ export default function App() {
             }
           </footer>
       </SidebarInset>
-      <Toaster theme={theme.theme} visibleToasts={1} position="bottom-center"/>
+      <Toaster 
+        theme={theme.theme} 
+        visibleToasts={1} 
+        position="bottom-center" 
+        mobileOffset={{ bottom: "52px" }}
+      />
     </SidebarProvider>
   );
 }
