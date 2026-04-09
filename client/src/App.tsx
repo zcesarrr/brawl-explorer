@@ -92,8 +92,7 @@ export default function App() {
             <>
               <header className="flex gap-2 p-2 items-center overflow-x-auto overflow-y-hidden">
                   <span>{selectedModel.filename}</span>
-                  ·
-                  <p>{getAutoSizeString(selectedModel.size)}</p>
+                  <p className="text-neutral-500">{getAutoSizeString(selectedModel.size)}</p>
               </header>
               <Separator />
             </>
@@ -110,7 +109,7 @@ export default function App() {
             }
             {loadingModelViewer && 
               <div className="absolute w-full h-full left-0 top-0 bg-black/90 flex justify-center items-center">
-                <LoaderCircle className="animate-spin" size={48} />
+                <LoaderCircle className="animate-spin text-white" size={48} />
               </div>
             }
           </div>

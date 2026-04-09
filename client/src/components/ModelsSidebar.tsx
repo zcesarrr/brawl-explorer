@@ -108,34 +108,36 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                                 </PaginationLink>
                             </PaginationItem>
                         ))}
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <PaginationItem>
-                                    <PaginationEllipsis />
-                                </PaginationItem>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-20">
-                                <Input 
-                                    type="number"                                     
-                                    min={1} 
-                                    max={totalPages}
-                                    defaultValue={currentPage}
-                                    enterKeyHint="done"
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-                                        let target = Number(e.currentTarget.value) - 1;
-                                        
-                                        if (target > totalPages - 1) { 
-                                            target = totalPages;
-                                            e.currentTarget.value = target.toString();
-                                        }
+                        {totalPages > 5 && 
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <PaginationItem>
+                                        <PaginationEllipsis />
+                                    </PaginationItem>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-20">
+                                    <Input 
+                                        type="number"                                     
+                                        min={1} 
+                                        max={totalPages}
+                                        defaultValue={currentPage}
+                                        enterKeyHint="done"
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+                                            let target = Number(e.currentTarget.value) - 1;
+                                            
+                                            if (target > totalPages - 1) { 
+                                                target = totalPages;
+                                                e.currentTarget.value = target.toString();
+                                            }
 
-                                        if (target + 1 > 0) {
-                                            setOffset(target * modelsPerPage)
-                                        }
-                                    }}
-                                />
-                            </PopoverContent>
-                        </Popover>
+                                            if (target + 1 > 0) {
+                                                setOffset(target * modelsPerPage)
+                                            }
+                                        }}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        }
                     </PaginationContent>
                 </Pagination>
             </SidebarFooter>
