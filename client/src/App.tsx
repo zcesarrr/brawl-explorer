@@ -9,6 +9,7 @@ import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 import Presentation from "./components/Presentation";
 import { useTheme } from "./components/theme-provider";
+import { toast, Toaster } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 
@@ -113,7 +114,7 @@ export default function App() {
 
       setTextureLoaded(textureData);
     } catch (err) {
-      console.error(err);
+      toast.error("The texture was not found");
     } finally {
       setLoadingTexture(false);
     }
@@ -220,6 +221,7 @@ export default function App() {
             }
           </footer>
       </SidebarInset>
+      <Toaster theme={theme.theme} visibleToasts={1} position="bottom-center"/>
     </SidebarProvider>
   );
 }
