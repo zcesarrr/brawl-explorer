@@ -19,6 +19,7 @@ export default function App() {
   const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
   const [modelSearch, setModelSearch] = useState<string>("");
   const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
+  const [loadingTexture, setLoadingTexture] = useState<boolean>(false);
 
   const theme = useTheme();
 
@@ -85,6 +86,8 @@ export default function App() {
     const modelNameSplit = selectedModel.filename.split("_geo.glb");
     const textureName = `${modelNameSplit[0]}_tex.sctx`;
 
+    setLoadingTexture(true);
+
     try {
       const res = await fetch(`${API_URL}parse-texture`, {
         method: "POST",
@@ -108,10 +111,11 @@ export default function App() {
         size: json.data.size,
       }
 
-      console.log(textureData);
       setTextureLoaded(textureData);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoadingTexture(false);
     }
   };
 
@@ -173,12 +177,13 @@ export default function App() {
                     <Button 
                       variant="secondary" 
                       size="lg"
-                      disabled={loadingModelViewer}
+                      disabled={loadingModelViewer || loadingTexture}
                       onClick={() => {
                         handleLoadTexture();
                       }}
                     >
-                      Load Texture
+                      Auto Texture
+                      {loadingTexture && <LoaderCircle className="animate-spin"/>}
                     </Button>
                     <Button 
                       variant="secondary" 
