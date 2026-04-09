@@ -2,7 +2,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel
 import { Input } from "./ui/input";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "./ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
 import { X } from "lucide-react";
 
@@ -71,8 +71,8 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
             <SidebarContent>
                 <SidebarGroup className="overflow-y-auto">
                     <SidebarGroupLabel>Models</SidebarGroupLabel>
-                    <SidebarMenu className="gap-0.5">
-                        {modelsFiltered.map(item => (
+                    <SidebarMenu className="gap-1">
+                        {modelsFiltered.map((item, index) => (
                             <SidebarMenuItem key={item}>
                                 <SidebarMenuButton
                                     disabled={disabled || selectedModel === item}
@@ -81,7 +81,10 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                                         if (onModelClick) onModelClick(item);
                                     }}
                                 >
-                                    <p className="truncate">{item.split("_geo.glb")[0]}</p>
+                                    <div className="truncate flex gap-1.5 items-center">
+                                        <span className="text-neutral-500 text-[8px]">{(index + 1) + offset}</span>
+                                        <p className="truncate">{item.split("_geo.glb")[0]}</p>
+                                    </div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
