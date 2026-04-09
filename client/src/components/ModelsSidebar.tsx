@@ -4,7 +4,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useState } from "react";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
-import { X } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
 
 const modelsPerPage = 100;
 
@@ -12,11 +12,12 @@ type Props = {
     models: string[];
     disabled?: boolean;
     selectedModel?: string | null;
+    loading?: boolean;
     onModelClick?: (modelName: string) => void;
     onModelSearchChange?: (text: string) => void;
 };
 
-export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel, onModelSearchChange }: Props) {
+export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel, onModelSearchChange, loading = true }: Props) {
     const [searchInputText, setSearchInputText] = useState<string>("");
 
     const [offset, setOffset] = useState<number>(0);
@@ -141,6 +142,11 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                     </PaginationContent>
                 </Pagination>
             </SidebarFooter>
+            {loading &&
+                <div className="absolute left-0 top-0 w-full h-full flex justify-center items-center bg-black/50 z-100 rounded-tr-2xl rounded-br-2xl">
+                    <LoaderCircle className="animate-spin" size={32} />
+                </div>
+            }
         </Sidebar>
     );
 }

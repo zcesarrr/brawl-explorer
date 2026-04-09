@@ -86,6 +86,7 @@ export default function App() {
         onModelClick={(modelName) => handleModelClick(modelName)}
         selectedModel={selectedModel ? selectedModel.filename : null}
         onModelSearchChange={(text) => setModelSearch(text)}
+        loading={loadingModels}
       />
       <SidebarInset>
           {selectedModel && 
@@ -162,11 +163,6 @@ export default function App() {
             }
           </footer>
       </SidebarInset>
-      {loadingModels && 
-        <div className="absolute left-0 top-0 w-full h-full bg-black/80 z-100 flex justify-center items-center">
-          <span className="text-4xl">Loading...</span>
-        </div>
-      }
     </SidebarProvider>
   );
 }

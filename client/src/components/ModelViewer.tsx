@@ -1,4 +1,4 @@
-import "@google/model-viewer";
+import "@google/model-viewer/dist/model-viewer.min.js";
 import type { ModelViewerElement } from "@google/model-viewer";
 import { useEffect, useRef } from "react";
 
