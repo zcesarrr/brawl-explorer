@@ -4,7 +4,7 @@ import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { Info, LoaderCircle, Moon, Sun } from "lucide-react";
-import type { ModelParsed } from "./types/models.types";
+import type { FileOutput } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 import Presentation from "./components/Presentation";
@@ -15,9 +15,10 @@ const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostna
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
-  const [selectedModel, setSelectedModel] = useState<ModelParsed | null>(null);
+  const [selectedModel, setSelectedModel] = useState<FileOutput | null>(null);
   const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
   const [modelSearch, setModelSearch] = useState<string>("");
+  const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
 
   const theme = useTheme();
 
@@ -78,6 +79,42 @@ export default function App() {
     }
   }
 
+  const handleLoadTexture = async () => {
+    if (!selectedModel) return;
+
+    const modelNameSplit = selectedModel.filename.split("_geo.glb");
+    const textureName = `${modelNameSplit[0]}_tex.sctx`;
+
+    try {
+      const res = await fetch(`${API_URL}parse-texture`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: textureName,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        console.error(json.error || "Request failed");
+      }
+
+      const textureData = {
+        uri: json.data.uri,
+        filename: json.data.originalName,
+        size: json.data.size,
+      }
+
+      console.log(textureData);
+      setTextureLoaded(textureData);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <SidebarProvider className="relative">
       <ModelsSidebar 
@@ -103,6 +140,7 @@ export default function App() {
               <ModelViewer 
                 src={selectedModel.uri}
                 loaded={() => setLoadingModelViewer(false)}
+                textureData={textureLoaded}
               />
               :
               !loadingModelViewer && 
@@ -130,25 +168,36 @@ export default function App() {
               </Button>
               {selectedModel && 
                 <>
-                  <Separator orientation="vertical" className="mx-1"/>
-                  <Button 
-                    className="ml-0.5"
-                    variant="secondary" 
-                    size="lg"
-                    disabled={loadingModelViewer}
-                    onClick={() => {
-                      const link = document.createElement("a");
+                  <Separator orientation="vertical" className="ml-1 mr-1.5"/>
+                  <div className="flex gap-1">
+                    <Button 
+                      variant="secondary" 
+                      size="lg"
+                      disabled={loadingModelViewer}
+                      onClick={() => {
+                        handleLoadTexture();
+                      }}
+                    >
+                      Load Texture
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      size="lg"
+                      disabled={loadingModelViewer}
+                      onClick={() => {
+                        const link = document.createElement("a");
 
-                      link.href = selectedModel.uri;
-                      link.download = selectedModel.filename;
+                        link.href = selectedModel.uri;
+                        link.download = selectedModel.filename;
 
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                  >
-                    Export Model
-                  </Button>
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      Export Model
+                    </Button>
+                  </div>
                 </>
               }
             </div>

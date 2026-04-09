@@ -1,11 +1,13 @@
+import type { FileOutput } from "@/types/models.types";
 import { useEffect, useRef } from "react";
 
 type Props = {
     src: string;
     loaded: () => void;
+    textureData: FileOutput | null;
 };
 
-export default function ModelViewer({ src, loaded }: Props) {
+export default function ModelViewer({ src, loaded, textureData }: Props) {
     const modelViewerRef = useRef<any>(null);
 
     useEffect(() => {
@@ -15,13 +17,6 @@ export default function ModelViewer({ src, loaded }: Props) {
 
         const handleLoad = async () => {
             loaded();
-
-            const materials = viewer.model.materials;
-            const texture = await viewer.createTexture("alli_valentine_tex.png");
-
-            for (let i = 0; i < materials.length; i ++) {
-                materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-            }
         };
 
         viewer.addEventListener("load", handleLoad);
@@ -30,6 +25,25 @@ export default function ModelViewer({ src, loaded }: Props) {
             viewer.removeEventListener("load", handleLoad);
         };
     }, [loaded]);
+
+    useEffect(() => {
+        if (!textureData) return;
+
+        const viewer = modelViewerRef.current;
+
+        if (!viewer) return;
+
+        const loadTexture = async () => {
+            const materials = viewer.model.materials;
+            const texture = await viewer.createTexture(textureData.uri);
+
+            for (let i = 0; i < materials.length; i ++) {
+                materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+            }
+        }
+
+        loadTexture();
+    }, [textureData]);
 
     return (
         <model-viewer 

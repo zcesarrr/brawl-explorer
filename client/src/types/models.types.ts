@@ -1,4 +1,4 @@
-export type ModelParsed = {
+export type FileOutput = {
     filename: string;
     uri: string;
     size: number;
