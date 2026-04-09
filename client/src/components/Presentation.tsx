@@ -12,7 +12,7 @@ export default function Presentation() {
                                 className="p-1 outline outline-accent"
                             >
                                 Cess
-                        </a>
+                            </a>
                     </h2>
             </div>
             <p className="px-4 pb-4 text-xs">
@@ -23,8 +23,8 @@ export default function Presentation() {
                     rel="noreferrer noopener"
                     className="text-neutral-400 underline"
                 >
-                www.supercell.com/fan-content-policy.
-                    </a>
+                    www.supercell.com/fan-content-policy.
+                </a>
             </p>
         </div>
     );
