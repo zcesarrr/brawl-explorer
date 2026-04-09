@@ -84,7 +84,7 @@ export default function App() {
         onModelSearchChange={(text) => setModelSearch(text)}
       />
       <SidebarInset>
-          <header className="flex p-2 items-center">
+          <header className="flex p-2 items-center overflow-x-auto overflow-y-hidden">
             <SidebarTrigger size={"icon-lg"}/>
             {selectedModel && 
               <>
