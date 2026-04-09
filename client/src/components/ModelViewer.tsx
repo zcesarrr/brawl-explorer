@@ -17,7 +17,7 @@ export default function ModelViewer({ src, loaded }: Props) {
             loaded();
 
             const materials = viewer.model.materials;
-            const texture = await viewer.createTexture("ffsash_pinata_tex_highres.png");
+            const texture = await viewer.createTexture("alli_valentine_tex.png");
 
             for (let i = 0; i < materials.length; i ++) {
                 materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
