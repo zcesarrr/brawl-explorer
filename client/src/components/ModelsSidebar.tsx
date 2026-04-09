@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 import { Input } from "./ui/input";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "./ui/pagination";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "./ui/pagination";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 const ROW_HEIGHT = 32;
 const OVERSCAN_ROWS = 8;
@@ -110,9 +111,16 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                                 3
                             </PaginationLink>
                         </PaginationItem>
-                        <PaginationItem>
-                            <PaginationEllipsis />
-                        </PaginationItem>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <PaginationItem>
+                                    <PaginationEllipsis />
+                                </PaginationItem>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-24">
+                                <Input type="number" max={10}/>
+                            </PopoverContent>
+                        </Popover>
                     </PaginationContent>
                 </Pagination>
             </SidebarFooter>
