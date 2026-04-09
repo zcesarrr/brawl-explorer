@@ -1,5 +1,6 @@
 import express from "express";
 import type { Express, NextFunction, Request, Response } from "express";
+import helmet from "helmet";
 import cors from "cors";
 import fs from "fs/promises";
 import path from "path";
@@ -16,6 +17,7 @@ app.use(cors({
 }));
 app.disable('x-powered-by');
 app.use(express.json());
+app.use(helmet());
 
 app.get("/", async (req: Request, res: Response) => {
     const files = (await fs.readdir(modelsDirectory)).filter(file => file.endsWith("geo.glb"));
