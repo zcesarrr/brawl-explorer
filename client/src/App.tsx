@@ -9,7 +9,7 @@ import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 import Presentation from "./components/Presentation";
 import { useTheme } from "./components/theme-provider";
-import { toast, Toaster } from "sonner";
+import { toast, Toaster, useSonner } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 
@@ -23,8 +23,9 @@ export default function App() {
   const [loadingTexture, setLoadingTexture] = useState<boolean>(false);
 
   const theme = useTheme();
-
   const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()));
+
+  const { toasts } = useSonner();
 
   useEffect(() => {
     const getModels = async () => {
@@ -50,8 +51,14 @@ export default function App() {
     getModels();
   }, []);
 
+  const removeAllToasts = () => {
+    toasts.forEach(t => toast.dismiss(t.id));
+  }
+
   const handleModelClick = async (modelName: string) => {
     setLoadingModelViewer(true);
+
+    removeAllToasts();
 
     try {
       const res = await fetch(`${API_URL}parse-model`, {
@@ -114,7 +121,7 @@ export default function App() {
 
       setTextureLoaded(textureData);
     } catch (err) {
-      toast.error("The texture was not found");
+      toast.error("The texture was not found", { id: "texture_not_found" });
     } finally {
       setLoadingTexture(false);
     }
