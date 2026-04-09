@@ -14,6 +14,7 @@ import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
 import { Checkbox } from "./components/ui/checkbox";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
+const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
@@ -53,6 +54,7 @@ export default function App() {
     };
 
     getModels();
+    setAutoLoadTexture(localStorage.getItem(AUTO_LOAD_TEXTURE_STORAGE) === "true");
   }, []);
 
   const removeAllToasts = () => {
@@ -226,8 +228,12 @@ export default function App() {
                           id="auto-load-texture" 
                           checked={autoLoadTexture} 
                           onCheckedChange={(checked) => {
-                            setAutoLoadTexture(checked === true);
-                            if (checked === true) handleLoadTexture();
+                            const check = checked === true;
+
+                            setAutoLoadTexture(check);
+                            if (check) handleLoadTexture();
+
+                            localStorage.setItem(AUTO_LOAD_TEXTURE_STORAGE, check ? "true" : "false");
                           }} 
                         />
                         <FieldLabel htmlFor="auto-load-texture">Auto load texture</FieldLabel>
