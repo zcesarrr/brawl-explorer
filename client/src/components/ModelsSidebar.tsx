@@ -43,6 +43,8 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                     type="search" 
                     placeholder="Search a model" 
                     onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+                        e.preventDefault();
+
                         if (onModelSearchChange) onModelSearchChange(e.currentTarget.value);
                     }}
                 />
@@ -87,12 +89,13 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                                     <PaginationEllipsis />
                                 </PaginationItem>
                             </PopoverTrigger>
-                            <PopoverContent className="w-24">
+                            <PopoverContent className="w-20">
                                 <Input 
-                                    type="number" 
+                                    type="number"                                     
                                     min={1} 
                                     max={totalPages}
                                     defaultValue={currentPage}
+                                    enterKeyHint="done"
                                     onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
                                         let target = Number(e.currentTarget.value) - 1;
                                         
