@@ -6,7 +6,7 @@ type Props = {
 };
 
 export default function ModelViewer({ src, loaded }: Props) {
-    const modelViewerRef = useRef<any>(null);    
+    const modelViewerRef = useRef<HTMLElement>(null);    
 
     useEffect(() => {
         const viewer = modelViewerRef.current;
