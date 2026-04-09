@@ -6,15 +6,22 @@ type Props = {
 };
 
 export default function ModelViewer({ src, loaded }: Props) {
-    const modelViewerRef = useRef<HTMLElement>(null);    
+    const modelViewerRef = useRef<any>(null);    
 
     useEffect(() => {
         const viewer = modelViewerRef.current;
 
         if (!viewer) return;
 
-        const handleLoad = () => {
+        const handleLoad = async () => {
             loaded();
+
+            const materials = viewer.model.materials;
+            const texture = await viewer.createTexture("ffsash_pinata_tex_highres.png");
+
+            for (let i = 0; i < materials.length; i ++) {
+                materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+            }
         };
 
         viewer.addEventListener("load", handleLoad);
