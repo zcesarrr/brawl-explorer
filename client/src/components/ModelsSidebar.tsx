@@ -2,7 +2,9 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel
 import { Input } from "./ui/input";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "./ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
+import { X } from "lucide-react";
 
 const modelsPerPage = 100;
 
@@ -15,6 +17,8 @@ type Props = {
 };
 
 export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel, onModelSearchChange }: Props) {
+    const [searchInputText, setSearchInputText] = useState<string>("");
+
     const [offset, setOffset] = useState<number>(0);
     const modelsFiltered = models.slice(offset, modelsPerPage + offset);
 
@@ -39,13 +43,30 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
     return (
         <Sidebar variant="inset">
             <SidebarHeader>
-                <Input 
-                    type="search" 
-                    placeholder="Search a model" 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-                        if (onModelSearchChange) onModelSearchChange(e.currentTarget.value);
-                    }}
-                />
+                <InputGroup>
+                    <InputGroupInput 
+                        className="[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
+                        type="search" 
+                        placeholder="Search a model" 
+                        value={searchInputText}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+                            if (onModelSearchChange) onModelSearchChange(e.currentTarget.value);
+                            setSearchInputText(e.currentTarget.value);
+                            setOffset(0);
+                        }}
+                    />
+                    {searchInputText != "" && 
+                        <InputGroupAddon 
+                            align="inline-end" 
+                            onClick={() => {
+                                setSearchInputText("");
+                                if (onModelSearchChange) onModelSearchChange("");
+                            }}
+                        >
+                            <InputGroupButton><X /></InputGroupButton>
+                        </InputGroupAddon>
+                    }
+                </InputGroup>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup className="overflow-y-auto">
