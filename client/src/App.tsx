@@ -46,6 +46,7 @@ export default function App() {
         setModels(json.data.models);
       } catch (err) {
         console.error(err);
+        toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
       } finally {
         setLoadingModels(false);
       }
