@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 import { Input } from "./ui/input";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "./ui/pagination";
 
 const ROW_HEIGHT = 32;
 const OVERSCAN_ROWS = 8;
@@ -91,6 +92,30 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                     </SidebarGroup>
                 </div>
             </SidebarContent>
+            <SidebarFooter>
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationLink size="default" isActive>
+                                1
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink size="default">
+                                2
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink size="default">
+                                3
+                            </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationEllipsis />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </SidebarFooter>
         </Sidebar>
     );
 }
