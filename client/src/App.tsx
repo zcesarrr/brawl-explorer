@@ -26,7 +26,7 @@ export default function App() {
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
 
   const theme = useTheme();
-  const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()));
+  const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()) && model !== "allie_geo.glb");
 
   const { toasts } = useSonner();
 
