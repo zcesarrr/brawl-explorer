@@ -3,7 +3,7 @@ import ModelsSidebar from "./components/ModelsSidebar";
 import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { LoaderCircle, Moon, Sun } from "lucide-react";
+import { Info, LoaderCircle, Moon, Sun } from "lucide-react";
 import type { ModelParsed } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
@@ -116,39 +116,50 @@ export default function App() {
           </div>
           <Separator />
           <footer className="flex items-center p-2">
-            <SidebarTrigger size={"icon-lg"}/>
-            <Button 
-              variant="ghost" 
-              size="icon-lg"
-              onClick={() => {
-                if (theme.theme === "light") theme.setTheme("dark");
-                else theme.setTheme("light");
-              }}
-            >
-              {theme.theme === "dark" ? <Moon /> : <Sun />}
-            </Button>
+            <div className="flex flex-1 items-center">
+              <SidebarTrigger size={"icon-lg"}/>
+              <Button 
+                variant="ghost" 
+                size="icon-lg"
+                onClick={() => {
+                  if (theme.theme === "light") theme.setTheme("dark");
+                  else theme.setTheme("light");
+                }}
+              >
+                {theme.theme === "dark" ? <Moon /> : <Sun />}
+              </Button>
+              {selectedModel && 
+                <>
+                  <Separator orientation="vertical" className="mx-1"/>
+                  <Button 
+                    className="ml-0.5"
+                    variant="secondary" 
+                    size="lg"
+                    disabled={loadingModelViewer}
+                    onClick={() => {
+                      const link = document.createElement("a");
+
+                      link.href = selectedModel.uri;
+                      link.download = selectedModel.filename;
+
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                  >
+                    Export Model
+                  </Button>
+                </>
+              }
+            </div>
             {selectedModel && 
-              <>
-                <Separator orientation="vertical" className="mx-1"/>
-                <Button 
-                  className="ml-0.5"
-                  variant="secondary" 
-                  size="lg"
-                  disabled={loadingModelViewer}
-                  onClick={() => {
-                    const link = document.createElement("a");
-
-                    link.href = selectedModel.uri;
-                    link.download = selectedModel.filename;
-
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                >
-                  Export Model
-                </Button>
-              </>
+              <Button 
+                variant="ghost" 
+                size="icon-lg"
+                onClick={() => setSelectedModel(null)}
+              >
+                <Info />
+              </Button>
             }
           </footer>
       </SidebarInset>
