@@ -1,5 +1,3 @@
-import "@google/model-viewer/dist/model-viewer.min.js";
-import type { ModelViewerElement } from "@google/model-viewer";
 import { useEffect, useRef } from "react";
 
 type Props = {
@@ -8,7 +6,7 @@ type Props = {
 };
 
 export default function ModelViewer({ src, loaded }: Props) {
-    const modelViewerRef = useRef<ModelViewerElement>(null);    
+    const modelViewerRef = useRef<any>(null);    
 
     useEffect(() => {
         const viewer = modelViewerRef.current;
