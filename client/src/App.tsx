@@ -3,7 +3,7 @@ import ModelsSidebar from "./components/ModelsSidebar";
 import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { House, LoaderCircle, Moon, Sun } from "lucide-react";
+import { House, Info, LoaderCircle, Moon, Sun } from "lucide-react";
 import type { FileOutput } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
@@ -334,18 +334,19 @@ export default function App() {
                 </>
               }
             </div>
-            {selectedModel && 
-              <>
-                <Separator orientation="vertical" className="mx-1"/>
+                {selectedModel && <Separator orientation="vertical" className="mx-1"/>}
                 <Button 
                   variant="ghost" 
                   size="icon-lg"
-                  onClick={() => setSelectedModel(null)}
+                  onClick={() => {
+                    if (selectedModel) { 
+                      setSelectedModel(null);
+                      return;
+                    }
+                  }}
                 >
-                  <House />
+                  {selectedModel ? <House /> : <Info />}
                 </Button>
-              </>
-            }
           </footer>
       </SidebarInset>
       <Toaster 

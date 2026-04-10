@@ -8,17 +8,20 @@ export default function Presentation() {
                     <h1 className="text-3xl">Brawl Project</h1>
                     <Badge className="mt-1 rounded-none" variant="outline">Beta</Badge>
                 </div>
-                    <h2 className="items-2">
-                        Made by {" "}
-                            <a 
-                                href="https://x.com/cessjr_" 
-                                target="_blank"
-                                rel="noreferrer noopener"
-                                className="hover:underline text-neutral-300"
-                            >
-                                Cess
-                            </a>
-                    </h2>
+                <h2>
+                    A web tool to visualize and explore Brawl Stars assets
+                </h2>
+                {/*<h3 className="items-2">
+                    Made by {" "}
+                        <a 
+                            href="https://x.com/cessjr_" 
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="hover:underline text-neutral-300"
+                        >
+                            Cess
+                        </a>
+                </h3>*/}
             </div>
             <p className="px-4 pb-4 text-xs">
                 This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: {" "}
