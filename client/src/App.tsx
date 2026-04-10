@@ -269,7 +269,7 @@ export default function App() {
                         <div className="max-h-90 overflow-hidden">
                           <FilesList
                             files={filteredTextures}
-                            loading={loadingTextures}
+                            loading={loadingTextures || loadingSelectedTexture}
                             splitLabel="_tex.sctx"
                             onFileSearchChange={(text: string) => setTextureSearch(text)}
                             selectedFile={textureLoaded?.filename}
