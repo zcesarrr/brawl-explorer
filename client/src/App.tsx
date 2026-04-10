@@ -19,6 +19,19 @@ import { ButtonGroup } from "./components/ui/button-group";
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000`;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
+function getSearchResults(search: string, items: string[], exclude?: string[]): string[] {
+  return items.filter(item => {
+    if (exclude?.includes(item)) return false;
+    if (!item) return true;
+
+    const searchWords = search.toLowerCase().trim().split(/\s+/);
+
+    const itemLower = item.toLowerCase();
+
+    return searchWords.every(word => itemLower.includes(word));
+  });
+}
+
 export default function App() {
   const [models, setModels] = useState<string[]>([]);
   const [loadingModels, setLoadingModels] = useState<boolean>(true);
@@ -35,8 +48,8 @@ export default function App() {
 
   const theme = useTheme();
 
-  const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()) && model !== "allie_geo.glb");
-  const filteredTextures = textures.filter(texture => texture.includes(textureSearch.toLocaleLowerCase()));
+  const filteredModels = getSearchResults(modelSearch, models, ["allie_geo.glb"]);
+  const filteredTextures = getSearchResults(textureSearch, textures);
 
   const { toasts } = useSonner();
 
