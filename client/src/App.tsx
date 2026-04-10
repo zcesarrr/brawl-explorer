@@ -248,7 +248,7 @@ export default function App() {
                             loadTextures();
                           }
                         } else {
-                          setTextureSearch("")
+                          
                         }
                       }}
                     >
@@ -275,6 +275,7 @@ export default function App() {
                             selectedFile={textureLoaded?.filename}
                             onFileClick={(textureName) => handleLoadTexture(textureName)}
                             filesPerPage={50}
+                            inputDefault={textureSearch}
                           />
                         </div>
                         <DialogFooter>

@@ -30,6 +30,7 @@ type Props = {
     title?: string;
     searchPlaceholder?: string;
     splitLabel?: string;
+    inputSearchDefault?: string;
     onItemClick?: (item: string) => void;
     onSearchChange?: (text: string) => void;
     renderLayout?: (sections: LayoutSections) => ReactNode;
@@ -46,13 +47,14 @@ export default function SearchablePaginatedList({
     title = "List",
     searchPlaceholder = "Search a list",
     splitLabel,
+    inputSearchDefault,
     onItemClick,
     onSearchChange,
     renderLayout,
     renderList,
     loadingOverlayClassName,
 }: Props) {
-    const [searchInputText, setSearchInputText] = useState<string>("");
+    const [searchInputText, setSearchInputText] = useState<string>(inputSearchDefault || "");
     const [offset, setOffset] = useState<number>(0);
 
     const itemsFiltered = useMemo(() => {
