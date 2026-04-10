@@ -88,7 +88,14 @@ async function executeSctxDecode(input: string, output: string): Promise<ScriptR
             ? ["decode", "-t", input, output]
             : [converterPath, "decode", "-t", input, output];
 
-        const converterProcess = spawn(command, args);
+        const converterProcess = spawn(command, args, {
+            env: isWindows
+                ? process.env
+                : {
+                    ...process.env,
+                    WINEDEBUG: "-all",
+                },
+        });
 
         let stdout = '';
         let stderr = '';
