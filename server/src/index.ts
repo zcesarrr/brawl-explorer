@@ -146,4 +146,4 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-app.listen(PORT, "0.0.0.0");
+app.listen(PORT);

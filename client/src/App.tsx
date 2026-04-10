@@ -17,7 +17,7 @@ import FilesList from "./components/FilesList";
 import { ButtonGroup } from "./components/ui/button-group";
 import Information from "./components/Information";
 
-const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000`;
+const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
 function getSearchResults(search: string, items: string[], exclude?: string[]): string[] {
