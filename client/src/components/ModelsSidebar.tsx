@@ -1,12 +1,5 @@
+import SearchablePaginatedList from "./SearchablePaginatedList";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
-import { Input } from "./ui/input";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink } from "./ui/pagination";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { useState } from "react";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "./ui/input-group";
-import { LoaderCircle, X } from "lucide-react";
-
-const modelsPerPage = 100;
 
 type Props = {
     models: string[];
@@ -18,135 +11,49 @@ type Props = {
 };
 
 export default function ModelsSidebar({ models, onModelClick, disabled = false, selectedModel, onModelSearchChange, loading = true }: Props) {
-    const [searchInputText, setSearchInputText] = useState<string>("");
-
-    const [offset, setOffset] = useState<number>(0);
-    const modelsFiltered = models.slice(offset, modelsPerPage + offset);
-
-    const totalPages = Math.max(1, Math.ceil(models.length / modelsPerPage));
-    const currentPage = Math.min(totalPages, Math.floor(offset / modelsPerPage) + 1);
-
-    const getPaginationWindow = (): number[] => {
-        if (totalPages <= 5) {
-            return Array.from({ length: totalPages }, (_, index) => index + 1);
-        }
-
-        let start = Math.max(1, currentPage - 2);
-        const end = Math.min(totalPages, start + 4);
-
-        if (end - start < 4) {
-            start = Math.max(1, end - 4);
-        }
-
-        return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-    }
-
     return (
-        <Sidebar variant="inset">
-            <SidebarHeader>
-                <InputGroup>
-                    <InputGroupInput 
-                        className="[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
-                        type="search" 
-                        placeholder="Search a model" 
-                        value={searchInputText}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-                            if (onModelSearchChange) onModelSearchChange(e.currentTarget.value);
-                            setSearchInputText(e.currentTarget.value);
-                            setOffset(0);
-                        }}
-                    />
-                    {searchInputText != "" && 
-                        <InputGroupAddon 
-                            align="inline-end" 
-                            onClick={() => {
-                                setSearchInputText("");
-                                if (onModelSearchChange) onModelSearchChange("");
-                            }}
-                        >
-                            <InputGroupButton><X /></InputGroupButton>
-                        </InputGroupAddon>
-                    }
-                </InputGroup>
-            </SidebarHeader>
-            <SidebarContent>
+        <SearchablePaginatedList
+            items={models}
+            disabled={disabled}
+            selectedItem={selectedModel}
+            loading={loading}
+            title="Models"
+            searchPlaceholder="Search a model"
+            onItemClick={onModelClick}
+            onSearchChange={onModelSearchChange}
+            loadingOverlayClassName="absolute left-0 top-0 z-100 flex h-full w-full items-center justify-center rounded-br-2xl rounded-tr-2xl bg-black/50"
+            renderList={({ items, offset, selectedItem, disabled, onItemClick, getItemLabel }) => (
                 <SidebarGroup className="overflow-y-auto">
-                    <SidebarGroupLabel className="flex gap-1 items-center justify-between">
+                    <SidebarGroupLabel className="flex items-center justify-between gap-1">
                         Models
-                        <span className="text-neutral-500 text-[10px]">{models.length} results</span>
+                        <span className="text-[10px] text-neutral-500">{models.length} results</span>
                     </SidebarGroupLabel>
                     <SidebarMenu className="gap-1">
-                        {modelsFiltered.map((item, index) => (
+                        {items.map((item, index) => (
                             <SidebarMenuItem key={item}>
                                 <SidebarMenuButton
-                                    disabled={disabled || selectedModel === item}
-                                    isActive={selectedModel === item}
-                                    onClick={() => {
-                                        if (onModelClick) onModelClick(item);
-                                    }}
+                                    disabled={disabled || selectedItem === item}
+                                    isActive={selectedItem === item}
+                                    onClick={() => onItemClick?.(item)}
                                 >
-                                    <div className="truncate flex gap-1.5 items-center">
-                                        <span className="text-neutral-500 text-[8px]">{(index + 1) + offset}</span>
-                                        <p className="truncate">{item.split("_geo.glb")[0]}</p>
+                                    <div className="flex items-center gap-1.5 truncate">
+                                        <span className="text-[8px] text-neutral-500">{index + 1 + offset}</span>
+                                        <p className="truncate">{getItemLabel(item)}</p>
                                     </div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
-            </SidebarContent>
-            <SidebarFooter>
-                <Pagination>
-                    <PaginationContent>
-                        {getPaginationWindow().length > 1 && getPaginationWindow().map(item => (
-                            <PaginationItem key={item}>
-                                <PaginationLink 
-                                    size="default" 
-                                    isActive={item === currentPage}
-                                    onClick={() => setOffset((item - 1) * modelsPerPage)}
-                                >
-                                    {item}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        {totalPages > 5 && 
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <PaginationItem>
-                                        <PaginationEllipsis />
-                                    </PaginationItem>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-20">
-                                    <Input 
-                                        type="number"                                     
-                                        min={1} 
-                                        max={totalPages}
-                                        defaultValue={currentPage}
-                                        enterKeyHint="done"
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
-                                            let target = Number(e.currentTarget.value) - 1;
-                                            
-                                            if (target > totalPages - 1) { 
-                                                target = totalPages;
-                                                e.currentTarget.value = target.toString();
-                                            }
-
-                                            if (target + 1 > 0) {
-                                                setOffset(target * modelsPerPage)
-                                            }
-                                        }}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        }
-                    </PaginationContent>
-                </Pagination>
-            </SidebarFooter>
-            {loading &&
-                <div className="absolute left-0 top-0 w-full h-full flex justify-center items-center bg-black/50 z-100 rounded-tr-2xl rounded-br-2xl">
-                    <LoaderCircle className="animate-spin" size={32} />
-                </div>
-            }
-        </Sidebar>
+            )}
+            renderLayout={({ search, list, pagination, loadingOverlay }) => (
+                <Sidebar variant="inset">
+                    <SidebarHeader>{search}</SidebarHeader>
+                    <SidebarContent>{list}</SidebarContent>
+                    <SidebarFooter>{pagination}</SidebarFooter>
+                    {loadingOverlay}
+                </Sidebar>
+            )}
+        />
     );
 }
