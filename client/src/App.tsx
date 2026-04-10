@@ -16,6 +16,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import FilesList from "./components/FilesList";
 import { ButtonGroup } from "./components/ui/button-group";
 import Information from "./components/Information";
+import { useItems } from "./hooks/useItems";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -34,17 +35,28 @@ function getSearchResults(search: string, items: string[], exclude?: string[]): 
 }
 
 export default function App() {
-  const [models, setModels] = useState<string[]>([]);
-  const [loadingModels, setLoadingModels] = useState<boolean>(true);
-  const [selectedModel, setSelectedModel] = useState<FileOutput | null>(null);
-  const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
-  const [modelSearch, setModelSearch] = useState<string>("");
+  const { 
+    items: models, 
+    loadingItems: loadingModels, 
+    selectedItem: selectedModel, 
+    setSelectedItem: setSelectedModel, 
+    loadingSelectedItem: loadingModelViewer, 
+    setLoadingSelectedItem: setLoadingModelViewer, 
+    itemSearch: modelSearch, 
+    setItemSearch: setModelSearch 
+  } = useItems({
+    endpoint: `${API_URL}/models`,
+    itemsName: "models",
+  });
+
+  
 
   const [textures, setTextures] = useState<string[]>([]);
   const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
-  const [textureSearch, setTextureSearch] = useState<string>("");
   const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
   const [loadingSelectedTexture, setLoadingSelectedTexture] = useState<boolean>(false);
+  const [textureSearch, setTextureSearch] = useState<string>("");
+
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
 
   const theme = useTheme();
@@ -55,28 +67,6 @@ export default function App() {
   const { toasts } = useSonner();
 
   useEffect(() => {
-    const getModels = async () => {
-      setLoadingModels(true);
-
-      try {
-        const res = await fetch(`${API_URL}/models`);
-
-        const json = await res.json();
-
-        if (!res.ok || !json.success) {
-          console.error(json.error || "Request failed");
-        }
-
-        setModels(json.data.models);
-      } catch (err) {
-        console.error(err);
-        toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
-      } finally {
-        setLoadingModels(false);
-      }
-    };
-
-    getModels();
     setAutoLoadTexture(localStorage.getItem(AUTO_LOAD_TEXTURE_STORAGE) === "true");
   }, []);
 
@@ -105,6 +95,7 @@ export default function App() {
 
       if (!res.ok || !json.success) {
         console.error(json.error || "Request failed");
+        return;
       }
 
       setSelectedModel({
@@ -128,6 +119,7 @@ export default function App() {
 
       if (!res.ok || !json.success) {
         console.error(json.error || "Request failed");
+        return;
       }
 
       setTextures(json.data.textures);
