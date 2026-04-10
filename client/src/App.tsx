@@ -27,12 +27,15 @@ export default function App() {
 
   const [textures, setTextures] = useState<string[]>([]);
   const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
+  const [textureSearch, setTextureSearch] = useState<string>("");
   const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
   const [loadingSelectedTexture, setLoadingSelectedTexture] = useState<boolean>(false);
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
 
   const theme = useTheme();
+
   const filteredModels = models.filter(model => model.includes(modelSearch.toLowerCase()) && model !== "allie_geo.glb");
+  const filteredTextures = textures.filter(texture => texture.includes(textureSearch.toLocaleLowerCase()));
 
   const { toasts } = useSonner();
 
@@ -70,6 +73,7 @@ export default function App() {
     setLoadingModelViewer(true);
 
     removeAllToasts();
+    setTextureLoaded(null);
 
     try {
       const res = await fetch(`${API_URL}/parse-model`, {
@@ -252,19 +256,21 @@ export default function App() {
                           size="lg"
                           disabled={loadingModelViewer || loadingSelectedTexture}
                         >
-                          Search Texture
+                          Texture Search
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Search a Texture</DialogTitle>
-                          <DialogDescription>Choose a texture to apply from this list</DialogDescription>
+                          <DialogTitle>Texture Search</DialogTitle>
+                          <DialogDescription>Choose a texture from this list to apply</DialogDescription>
                         </DialogHeader>
                         <div className="max-h-90 overflow-hidden">
                           <FilesList
-                            files={textures}
+                            files={filteredTextures}
                             loading={loadingTextures}
                             splitLabel="_tex.sctx"
+                            onFileSearchChange={(text: string) => setTextureSearch(text)}
+                            selectedFile={textureLoaded?.filename}
                           />
                         </div>
                         <DialogFooter>

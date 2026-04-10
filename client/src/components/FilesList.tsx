@@ -3,24 +3,24 @@ import SearchablePaginatedList from "./SearchablePaginatedList";
 type Props = {
     files: string[];
     disabled?: boolean;
-    selectedModel?: string | null;
+    selectedFile?: string | null;
     loading?: boolean;
     splitLabel?: string;
-    onModelClick?: (modelName: string) => void;
-    onModelSearchChange?: (text: string) => void;
+    onFileClick?: (modelName: string) => void;
+    onFileSearchChange?: (text: string) => void;
 };
 
-export default function FilesList({ files, onModelClick, disabled = false, selectedModel, onModelSearchChange, loading = true, splitLabel }: Props) {
+export default function FilesList({ files, onFileClick, disabled = false, selectedFile, onFileSearchChange, loading = true, splitLabel }: Props) {
     return (
         <SearchablePaginatedList
             items={files}
             disabled={disabled}
-            selectedItem={selectedModel}
+            selectedItem={selectedFile}
             loading={loading}
             title="Files"
             searchPlaceholder="Search a file"
-            onItemClick={onModelClick}
-            onSearchChange={onModelSearchChange}
+            onItemClick={onFileClick}
+            onSearchChange={onFileSearchChange}
             splitLabel={splitLabel}
         />
     );
