@@ -158,6 +158,7 @@ async function ensureRuntimeWarm(converterPath: string): Promise<void> {
     runtimeWarmupPromise = (async () => {
         if (process.platform === "win32") {
             await runProcess("cmd", ["/d", "/s", "/c", "echo"], { timeoutMs: 1500 });
+            isRuntimeWarm = true;
             return;
         }
 
