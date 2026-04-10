@@ -15,7 +15,7 @@ import { Checkbox } from "./components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
 import FilesList from "./components/FilesList";
 
-const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
+const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000`;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
 export default function App() {
@@ -38,7 +38,7 @@ export default function App() {
       setLoadingModels(true);
 
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(`${API_URL}/models`);
 
         const json = await res.json();
 
@@ -69,7 +69,7 @@ export default function App() {
     removeAllToasts();
 
     try {
-      const res = await fetch(`${API_URL}parse-model`, {
+      const res = await fetch(`${API_URL}/parse-model`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export default function App() {
     setLoadingTexture(true);
 
     try {
-      const res = await fetch(`${API_URL}parse-texture`, {
+      const res = await fetch(`${API_URL}/parse-texture`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

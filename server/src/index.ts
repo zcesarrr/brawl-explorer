@@ -22,7 +22,7 @@ app.disable('x-powered-by');
 app.use(express.json());
 app.use(helmet());
 
-app.get("/", async (req: Request, res: Response) => {
+app.get("/models", async (req: Request, res: Response) => {
     const files = (await fs.readdir(assetsDirectory)).filter(file => file.endsWith("geo.glb"));
 
     return res.status(200).json({
@@ -30,6 +30,18 @@ app.get("/", async (req: Request, res: Response) => {
         data: {
             results: files.length,
             models: files,
+        },
+    });
+});
+
+app.get("/textures", async (req: Request, res: Response) => {
+    const files = (await fs.readdir(assetsDirectory)).filter(file => file.endsWith("tex.sctx"));
+
+    return res.status(200).json({
+        success: true,
+        data: {
+            results: files.length,
+            textures: files,
         },
     });
 });
