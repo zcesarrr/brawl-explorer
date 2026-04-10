@@ -15,6 +15,7 @@ import { Checkbox } from "./components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
 import FilesList from "./components/FilesList";
 import { ButtonGroup } from "./components/ui/button-group";
+import Information from "./components/Information";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000`;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -215,7 +216,7 @@ export default function App() {
                       <ExportButton 
                         disabled={loadingModelViewer} 
                         fileMetadata={selectedModel} 
-                        label="Model"
+                        label="Model (.glb)"
                       />
                       
                       <ExportButton 
@@ -224,7 +225,7 @@ export default function App() {
                           filename: `${textureLoaded.filename.split(".sctx")[0]}.png`,
                           uri: textureLoaded.uri,
                         } : null} 
-                        label="Texture"
+                        label="Texture (.png)"
                       />
                     </ButtonGroup>
                   </div>
@@ -334,19 +335,43 @@ export default function App() {
                 </>
               }
             </div>
-                {selectedModel && <Separator orientation="vertical" className="mx-1"/>}
+            {selectedModel ? 
+              <>
+                <Separator orientation="vertical" className="mx-1"/>
                 <Button 
                   variant="ghost" 
                   size="icon-lg"
-                  onClick={() => {
-                    if (selectedModel) { 
-                      setSelectedModel(null);
-                      return;
-                    }
-                  }}
+                  onClick={() => setSelectedModel(null)}
                 >
-                  {selectedModel ? <House /> : <Info />}
+                  <House />
                 </Button>
+              </>
+              :
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon-lg"
+                  >
+                    <Info />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Information</DialogTitle>
+                    <DialogDescription>About the project, tools and notes</DialogDescription>
+                  </DialogHeader>
+                  <div>
+                    <Information />
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Close</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            }
           </footer>
       </SidebarInset>
       <Toaster 
