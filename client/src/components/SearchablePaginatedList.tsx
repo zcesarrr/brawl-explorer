@@ -17,8 +17,8 @@ type ListRendererArgs = {
     offset: number;
     selectedItem?: string | null;
     disabled: boolean;
+    splitLabel?: string;
     onItemClick?: (item: string) => void;
-    getItemLabel: (item: string) => string;
 };
 
 type Props = {
@@ -29,15 +29,13 @@ type Props = {
     itemsPerPage?: number;
     title?: string;
     searchPlaceholder?: string;
+    splitLabel?: string;
     onItemClick?: (item: string) => void;
     onSearchChange?: (text: string) => void;
-    getItemLabel?: (item: string) => string;
     renderLayout?: (sections: LayoutSections) => ReactNode;
     renderList?: (args: ListRendererArgs) => ReactNode;
     loadingOverlayClassName?: string;
 };
-
-const defaultGetItemLabel = (item: string): string => item.split("_geo.glb")[0];
 
 export default function SearchablePaginatedList({
     items,
@@ -47,9 +45,9 @@ export default function SearchablePaginatedList({
     itemsPerPage = 75,
     title = "List",
     searchPlaceholder = "Search a list",
+    splitLabel,
     onItemClick,
     onSearchChange,
-    getItemLabel = defaultGetItemLabel,
     renderLayout,
     renderList,
     loadingOverlayClassName,
@@ -128,7 +126,7 @@ export default function SearchablePaginatedList({
                         >
                             <div className="flex items-center gap-1.5 truncate">
                                 <span className="text-[8px] text-neutral-500">{index + 1 + offset}</span>
-                                <p className="truncate">{getItemLabel(item)}</p>
+                                <p className="truncate">{splitLabel ? item.split(splitLabel)[0] : item}</p>
                             </div>
                         </button>
                     </li>
@@ -144,7 +142,7 @@ export default function SearchablePaginatedList({
             disabled,
             selectedItem,
             onItemClick,
-            getItemLabel,
+            splitLabel,
         })
         : defaultList;
 

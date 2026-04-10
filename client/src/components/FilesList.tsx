@@ -5,11 +5,12 @@ type Props = {
     disabled?: boolean;
     selectedModel?: string | null;
     loading?: boolean;
+    splitLabel?: string;
     onModelClick?: (modelName: string) => void;
     onModelSearchChange?: (text: string) => void;
 };
 
-export default function FilesList({ files, onModelClick, disabled = false, selectedModel, onModelSearchChange, loading = true }: Props) {
+export default function FilesList({ files, onModelClick, disabled = false, selectedModel, onModelSearchChange, loading = true, splitLabel }: Props) {
     return (
         <SearchablePaginatedList
             items={files}
@@ -20,6 +21,7 @@ export default function FilesList({ files, onModelClick, disabled = false, selec
             searchPlaceholder="Search a file"
             onItemClick={onModelClick}
             onSearchChange={onModelSearchChange}
+            splitLabel={splitLabel}
         />
     );
 }

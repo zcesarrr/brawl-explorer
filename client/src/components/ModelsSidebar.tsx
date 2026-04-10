@@ -22,7 +22,7 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
             onItemClick={onModelClick}
             onSearchChange={onModelSearchChange}
             loadingOverlayClassName="absolute left-0 top-0 z-100 flex h-full w-full items-center justify-center rounded-br-2xl rounded-tr-2xl bg-black/50"
-            renderList={({ items, offset, selectedItem, disabled, onItemClick, getItemLabel }) => (
+            renderList={({ items, offset, selectedItem, disabled, onItemClick }) => (
                 <SidebarGroup className="overflow-y-auto">
                     <SidebarGroupLabel className="flex items-center justify-between gap-1">
                         Models
@@ -38,7 +38,7 @@ export default function ModelsSidebar({ models, onModelClick, disabled = false, 
                                 >
                                     <div className="flex items-center gap-1.5 truncate">
                                         <span className="text-[8px] text-neutral-500">{index + 1 + offset}</span>
-                                        <p className="truncate">{getItemLabel(item)}</p>
+                                        <p className="truncate">{item.split("_geo.glb")[0]}</p>
                                     </div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>

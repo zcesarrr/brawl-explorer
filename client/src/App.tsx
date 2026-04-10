@@ -24,8 +24,11 @@ export default function App() {
   const [selectedModel, setSelectedModel] = useState<FileOutput | null>(null);
   const [loadingModelViewer, setLoadingModelViewer] = useState<boolean>(false);
   const [modelSearch, setModelSearch] = useState<string>("");
+
+  const [textures, setTextures] = useState<string[]>([]);
+  const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
   const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
-  const [loadingTexture, setLoadingTexture] = useState<boolean>(false);
+  const [loadingSelectedTexture, setLoadingSelectedTexture] = useState<boolean>(false);
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
 
   const theme = useTheme();
@@ -96,13 +99,33 @@ export default function App() {
     }
   }
 
+  const loadTextures = async () => {
+    setLoadingTextures(true);
+
+    try {
+      const res = await fetch(`${API_URL}/textures`);
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        console.error(json.error || "Request failed");
+      }
+
+      setTextures(json.data.textures);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingTextures(false);
+    }
+  };
+
   const handleLoadTexture = async () => {
     if (!selectedModel) return;
 
     const modelNameSplit = selectedModel.filename.split("_geo.glb");
     const textureName = `${modelNameSplit[0]}_tex.sctx`;
 
-    setLoadingTexture(true);
+    setLoadingSelectedTexture(true);
 
     try {
       const res = await fetch(`${API_URL}/parse-texture`, {
@@ -131,7 +154,7 @@ export default function App() {
     } catch (err) {
       toast.error("The texture was not found", { id: "texture_not_found" });
     } finally {
-      setLoadingTexture(false);
+      setLoadingSelectedTexture(false);
     }
   };
 
@@ -139,7 +162,7 @@ export default function App() {
     <SidebarProvider className="relative">
       <ModelsSidebar 
         models={filteredModels} 
-        disabled={loadingModelViewer || loadingTexture}
+        disabled={loadingModelViewer || loadingSelectedTexture}
         onModelClick={(modelName) => handleModelClick(modelName)}
         selectedModel={selectedModel ? selectedModel.filename : null}
         onModelSearchChange={(text) => setModelSearch(text)}
@@ -212,14 +235,22 @@ export default function App() {
               {selectedModel && 
                 <>
                   <Separator orientation="vertical" className="ml-1 mr-1.5"/>
-                  {loadingTexture && <LoaderCircle className="animate-spin mr-1" size={16}/>}
+                  {loadingSelectedTexture && <LoaderCircle className="animate-spin mr-1" size={16}/>}
                   <div className="flex gap-1 items-center">
-                    <Dialog>
+                    <Dialog 
+                      onOpenChange={open => {
+                        if (open) {
+                          if (textures.length === 0) {
+                            loadTextures();
+                          }
+                        }
+                      }}
+                    >
                       <DialogTrigger asChild>
                         <Button 
                           variant="secondary" 
                           size="lg"
-                          disabled={loadingModelViewer || loadingTexture}
+                          disabled={loadingModelViewer || loadingSelectedTexture}
                         >
                           Search Texture
                         </Button>
@@ -231,8 +262,9 @@ export default function App() {
                         </DialogHeader>
                         <div className="max-h-90 overflow-hidden">
                           <FilesList
-                            files={models}
-                            loading={false}
+                            files={textures}
+                            loading={loadingTextures}
+                            splitLabel="_tex.sctx"
                           />
                         </div>
                         <DialogFooter>
@@ -246,7 +278,7 @@ export default function App() {
                     <Button 
                       variant="secondary" 
                       size="lg"
-                      disabled={loadingModelViewer || loadingTexture}
+                      disabled={loadingModelViewer || loadingSelectedTexture}
                       onClick={() => {
                         handleLoadTexture();
                       }}
