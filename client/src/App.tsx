@@ -14,6 +14,7 @@ import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
 import { Checkbox } from "./components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
 import FilesList from "./components/FilesList";
+import { ButtonGroup } from "./components/ui/button-group";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000`;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -196,20 +197,22 @@ export default function App() {
                 <div className="absolute left-2 bottom-2">
                   <p className="text-sm text-neutral-300 mb-1">Export</p>
                   <div className="flex gap-1">
-                    <ExportButton 
-                      disabled={loadingModelViewer} 
-                      fileMetadata={selectedModel} 
-                      label="Model"
-                    />
-                    
-                    <ExportButton 
-                      disabled={loadingSelectedTexture || !textureLoaded} 
-                      fileMetadata={textureLoaded ? {
-                        filename: `${textureLoaded.filename.split(".sctx")[0]}.png`,
-                        uri: textureLoaded.uri,
-                      } : null} 
-                      label="Texture"
-                    />
+                    <ButtonGroup>
+                      <ExportButton 
+                        disabled={loadingModelViewer} 
+                        fileMetadata={selectedModel} 
+                        label="Model"
+                      />
+                      
+                      <ExportButton 
+                        disabled={loadingSelectedTexture || !textureLoaded} 
+                        fileMetadata={textureLoaded ? {
+                          filename: `${textureLoaded.filename.split(".sctx")[0]}.png`,
+                          uri: textureLoaded.uri,
+                        } : null} 
+                        label="Texture"
+                      />
+                    </ButtonGroup>
                   </div>
                 </div>
               </div>
@@ -242,60 +245,62 @@ export default function App() {
                   <Separator orientation="vertical" className="ml-1 mr-1.5"/>
                   {loadingSelectedTexture && <LoaderCircle className="animate-spin mr-1" size={16}/>}
                   <div className="flex gap-1 items-center">
-                    <Dialog 
-                      onOpenChange={open => {
-                        if (open) {
-                          if (textures.length === 0) {
-                            loadTextures();
+                    <ButtonGroup>
+                      <Dialog 
+                        onOpenChange={open => {
+                          if (open) {
+                            if (textures.length === 0) {
+                              loadTextures();
+                            }
+                          } else {
+                            
                           }
-                        } else {
-                          
-                        }
-                      }}
-                    >
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="secondary" 
-                          size="lg"
-                          disabled={loadingModelViewer || loadingSelectedTexture}
-                        >
-                          Texture Search
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Texture Search</DialogTitle>
-                          <DialogDescription>Choose a texture from this list to apply</DialogDescription>
-                        </DialogHeader>
-                        <div className="max-h-90 overflow-hidden">
-                          <FilesList
-                            files={filteredTextures}
-                            loading={loadingTextures || loadingSelectedTexture}
-                            splitLabel="_tex.sctx"
-                            onFileSearchChange={(text: string) => setTextureSearch(text)}
-                            selectedFile={textureLoaded?.filename}
-                            onFileClick={(textureName) => handleLoadTexture(textureName)}
-                            filesPerPage={50}
-                            inputDefault={textureSearch}
-                          />
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button variant="outline">Close</Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <Button 
-                      variant="secondary" 
-                      size="lg"
-                      disabled={loadingModelViewer || loadingSelectedTexture}
-                      onClick={() => {
-                        handleLoadTexture();
-                      }}
-                    >
-                      Auto Texture
-                    </Button>
+                        }}
+                      >
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="secondary" 
+                            size="lg"
+                            disabled={loadingModelViewer || loadingSelectedTexture}
+                          >
+                            Texture Search
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Texture Search</DialogTitle>
+                            <DialogDescription>Choose a texture from this list to apply</DialogDescription>
+                          </DialogHeader>
+                          <div className="max-h-90 overflow-hidden">
+                            <FilesList
+                              files={filteredTextures}
+                              loading={loadingTextures || loadingSelectedTexture}
+                              splitLabel="_tex.sctx"
+                              onFileSearchChange={(text: string) => setTextureSearch(text)}
+                              selectedFile={textureLoaded?.filename}
+                              onFileClick={(textureName) => handleLoadTexture(textureName)}
+                              filesPerPage={50}
+                              inputDefault={textureSearch}
+                            />
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">Close</Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <Button 
+                        variant="secondary" 
+                        size="lg"
+                        disabled={loadingModelViewer || loadingSelectedTexture}
+                        onClick={() => {
+                          handleLoadTexture();
+                        }}
+                      >
+                        Auto Texture
+                      </Button>
+                    </ButtonGroup>
                     <FieldGroup className="w-32 ml-1">
                       <Field orientation="horizontal">
                         <Checkbox 
