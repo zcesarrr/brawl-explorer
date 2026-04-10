@@ -6,11 +6,12 @@ type Props = {
     selectedFile?: string | null;
     loading?: boolean;
     splitLabel?: string;
-    onFileClick?: (modelName: string) => void;
+    filesPerPage?: number;
+    onFileClick?: (filename: string) => void;
     onFileSearchChange?: (text: string) => void;
 };
 
-export default function FilesList({ files, onFileClick, disabled = false, selectedFile, onFileSearchChange, loading = true, splitLabel }: Props) {
+export default function FilesList({ files, onFileClick, disabled = false, selectedFile, onFileSearchChange, loading = true, splitLabel, filesPerPage }: Props) {
     return (
         <SearchablePaginatedList
             items={files}
@@ -22,6 +23,7 @@ export default function FilesList({ files, onFileClick, disabled = false, select
             onItemClick={onFileClick}
             onSearchChange={onFileSearchChange}
             splitLabel={splitLabel}
+            itemsPerPage={filesPerPage}
         />
     );
 }

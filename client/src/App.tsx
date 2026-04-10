@@ -123,11 +123,11 @@ export default function App() {
     }
   };
 
-  const handleLoadTexture = async () => {
+  const handleLoadTexture = async (filename?: string) => {
     if (!selectedModel) return;
 
     const modelNameSplit = selectedModel.filename.split("_geo.glb");
-    const textureName = `${modelNameSplit[0]}_tex.sctx`;
+    const textureName = filename ?? `${modelNameSplit[0]}_tex.sctx`;
 
     setLoadingSelectedTexture(true);
 
@@ -247,6 +247,8 @@ export default function App() {
                           if (textures.length === 0) {
                             loadTextures();
                           }
+                        } else {
+                          setTextureSearch("")
                         }
                       }}
                     >
@@ -271,10 +273,11 @@ export default function App() {
                             splitLabel="_tex.sctx"
                             onFileSearchChange={(text: string) => setTextureSearch(text)}
                             selectedFile={textureLoaded?.filename}
+                            onFileClick={(textureName) => handleLoadTexture(textureName)}
+                            filesPerPage={50}
                           />
                         </div>
                         <DialogFooter>
-                          <Button>Apply</Button>
                           <DialogClose asChild>
                             <Button variant="outline">Close</Button>
                           </DialogClose>
