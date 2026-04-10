@@ -4,6 +4,15 @@ import { existsSync } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 
+const converterCandidates = [
+    path.join(process.cwd(), 'src/sctx-converter/main.exe'),
+    path.join(process.cwd(), 'src/libs/sctx-converter/main.exe'),
+];
+
+let cachedConverterPath: string | null = null;
+let runtimeWarmupPromise: Promise<void> | null = null;
+let isRuntimeWarm = false;
+
 export async function convertTexture(texturePath: string) {
     try {
         if (!texturePath) {
@@ -67,12 +76,7 @@ type ScriptResult = {
 };
 
 async function executeSctxDecode(input: string, output: string): Promise<ScriptResult> {
-    const converterCandidates = [
-        path.join(process.cwd(), 'src/sctx-converter/main.exe'),
-        path.join(process.cwd(), 'src/libs/sctx-converter/main.exe'),
-    ];
-
-    const converterPath = converterCandidates.find((candidate) => existsSync(candidate));
+    const converterPath = getConverterPath();
 
     if (!converterPath) {
         return {
@@ -80,6 +84,8 @@ async function executeSctxDecode(input: string, output: string): Promise<ScriptR
             error: `SCTX converter not found. Expected one of: ${converterCandidates.join(', ')}`,
         };
     }
+
+    await ensureRuntimeWarm(converterPath);
 
     return new Promise((resolve) => {
         const isWindows = process.platform === "win32";
@@ -89,6 +95,7 @@ async function executeSctxDecode(input: string, output: string): Promise<ScriptR
             : [converterPath, "decode", "-t", input, output];
 
         const converterProcess = spawn(command, args, {
+            stdio: "pipe",
             env: isWindows
                 ? process.env
                 : {
@@ -124,6 +131,77 @@ async function executeSctxDecode(input: string, output: string): Promise<ScriptR
                 success: false,
                 error: `Failed to start SCTX converter (${command}): ${error.message}`
             });
+        });
+    });
+}
+
+function getConverterPath(): string | null {
+    if (cachedConverterPath && existsSync(cachedConverterPath)) {
+        return cachedConverterPath;
+    }
+
+    const foundPath = converterCandidates.find((candidate) => existsSync(candidate)) ?? null;
+    cachedConverterPath = foundPath;
+
+    return foundPath;
+}
+
+async function ensureRuntimeWarm(converterPath: string): Promise<void> {
+    if (isRuntimeWarm) {
+        return;
+    }
+
+    if (runtimeWarmupPromise) {
+        return runtimeWarmupPromise;
+    }
+
+    runtimeWarmupPromise = (async () => {
+        if (process.platform === "win32") {
+            await runProcess("cmd", ["/d", "/s", "/c", "echo"], { timeoutMs: 1500 });
+            return;
+        }
+
+        await runProcess("wineserver", ["-p"], { timeoutMs: 1500 });
+
+        await runProcess("wine", [converterPath], { timeoutMs: 4000, wineDebug: "-all" });
+
+        isRuntimeWarm = true;
+    })().finally(() => {
+        runtimeWarmupPromise = null;
+    });
+
+    return runtimeWarmupPromise;
+}
+
+async function runProcess(
+    command: string,
+    args: string[],
+    options: { timeoutMs: number; wineDebug?: string },
+): Promise<void> {
+    await new Promise<void>((resolve) => {
+        const child = spawn(command, args, {
+            stdio: "ignore",
+            env: options.wineDebug
+                ? {
+                    ...process.env,
+                    WINEDEBUG: options.wineDebug,
+                }
+                : process.env,
+        });
+
+        const timeout = setTimeout(() => {
+            child.kill();
+            resolve();
+        }, options.timeoutMs);
+
+        child.on("error", () => {
+            clearTimeout(timeout);
+            resolve();
+        });
+
+        child.on("close", () => {
+            clearTimeout(timeout);
+            resolve();
         });
     });
 }
