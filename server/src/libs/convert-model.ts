@@ -69,7 +69,7 @@ type ScriptResult = {
 async function executePythonScript(input: string, output: string): Promise<ScriptResult> {
     const pythonScript = path.join(process.cwd(), 'src/libs/supercell-flat-converter/main.py');
     const pythonExecutable = process.env.PYTHON_EXECUTABLE
-        || (process.platform === "win32" ? "python" : "python3");
+        || (process.platform === "win32" ? "py" : "python3");
 
     return new Promise((resolve) => {
         const py = spawn(pythonExecutable, [
