@@ -13,6 +13,7 @@ import { toast, Toaster, useSonner } from "sonner";
 import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
 import { Checkbox } from "./components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
+import FilesList from "./components/FilesList";
 
 const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:3000/`;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -228,9 +229,16 @@ export default function App() {
                           <DialogTitle>Search a Texture</DialogTitle>
                           <DialogDescription>Choose a texture to apply from this list</DialogDescription>
                         </DialogHeader>
+                        <div className="max-h-90 overflow-hidden">
+                          <FilesList
+                            files={models}
+                            loading={false}
+                          />
+                        </div>
                         <DialogFooter>
+                          <Button>Apply</Button>
                           <DialogClose asChild>
-                            <Button>Close</Button>
+                            <Button variant="outline">Close</Button>
                           </DialogClose>
                         </DialogFooter>
                       </DialogContent>

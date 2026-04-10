@@ -44,7 +44,7 @@ export default function SearchablePaginatedList({
     disabled = false,
     selectedItem,
     loading = false,
-    itemsPerPage = 100,
+    itemsPerPage = 75,
     title = "List",
     searchPlaceholder = "Search a list",
     onItemClick,
@@ -220,7 +220,7 @@ export default function SearchablePaginatedList({
     return (
         <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border bg-background">
             <div className="border-b p-2">{searchSection}</div>
-            <div className="min-h-0 flex-1 p-2">{listSection}</div>
+            <div className="min-h-0 flex-1 p-2 overflow-y-auto">{listSection}</div>
             <div className="border-t p-2">{paginationSection}</div>
             {loadingOverlay}
         </div>

@@ -16,8 +16,8 @@ export default function FilesList({ files, onModelClick, disabled = false, selec
             disabled={disabled}
             selectedItem={selectedModel}
             loading={loading}
-            title="Models"
-            searchPlaceholder="Search a model"
+            title="Files"
+            searchPlaceholder="Search a file"
             onItemClick={onModelClick}
             onSearchChange={onModelSearchChange}
         />
