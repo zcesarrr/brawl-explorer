@@ -3,7 +3,7 @@ import ModelsSidebar from "./components/ModelsSidebar";
 import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { Info, LoaderCircle, Moon, Sun } from "lucide-react";
+import { House, LoaderCircle, Moon, Sun } from "lucide-react";
 import type { FileOutput } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
@@ -342,7 +342,7 @@ export default function App() {
                   size="icon-lg"
                   onClick={() => setSelectedModel(null)}
                 >
-                  <Info />
+                  <House />
                 </Button>
               </>
             }
