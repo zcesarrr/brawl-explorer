@@ -1,8 +1,13 @@
+import { Badge } from "./ui/badge";
+
 export default function Presentation() {
     return (
         <div className="flex flex-col w-full h-full justify-center items-center text-neutral-500 text-center">
             <div className="flex flex-1 flex-col items-center justify-center gap-2 mt-8">
-                <h1 className="text-3xl">Brawl Project</h1>
+                <div className="flex items-center justify-center gap-2">
+                    <h1 className="text-3xl">Brawl Project</h1>
+                    <Badge className="mt-1 rounded-none" variant="outline">Beta</Badge>
+                </div>
                     <h2>
                         Made by {" "}
                             <a 
