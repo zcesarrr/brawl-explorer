@@ -193,24 +193,25 @@ export default function App() {
                   }}
                   textureData={textureLoaded}
                 />
-                <Button 
-                  className="absolute left-2 bottom-2"
-                  variant="default" 
-                  size="lg"
-                  disabled={loadingModelViewer}
-                  onClick={() => {
-                    const link = document.createElement("a");
-
-                    link.href = selectedModel.uri;
-                    link.download = selectedModel.filename;
-
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                >
-                  Export Model
-                </Button>
+                <div className="absolute left-2 bottom-2">
+                  <p className="text-sm text-neutral-300 mb-1">Export</p>
+                  <div className="flex gap-1">
+                    <ExportButton 
+                      disabled={loadingModelViewer} 
+                      fileMetadata={selectedModel} 
+                      label="Model"
+                    />
+                    
+                    <ExportButton 
+                      disabled={loadingSelectedTexture || !textureLoaded} 
+                      fileMetadata={textureLoaded ? {
+                        filename: `${textureLoaded.filename.split(".sctx")[0]}.png`,
+                        uri: textureLoaded.uri,
+                      } : null} 
+                      label="Texture"
+                    />
+                  </div>
+                </div>
               </div>
               :
               !loadingModelViewer && 
@@ -337,5 +338,35 @@ export default function App() {
         mobileOffset={{ bottom: "52px" }}
       />
     </SidebarProvider>
+  );
+}
+
+type ExportButtonProps = {
+  disabled: boolean;
+  fileMetadata?: { uri: string, filename: string } | null;
+  label: string;
+};
+
+function ExportButton({ disabled, fileMetadata, label }: ExportButtonProps) {
+  return (
+    <Button 
+      variant="default" 
+      size="lg"
+      disabled={disabled}
+      onClick={() => {
+        if (!fileMetadata) return;
+
+        const link = document.createElement("a");
+
+        link.href = fileMetadata.uri;
+        link.download = fileMetadata.filename;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }}
+    >
+      {label}
+    </Button>
   );
 }
