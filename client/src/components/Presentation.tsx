@@ -8,13 +8,13 @@ export default function Presentation() {
                     <h1 className="text-3xl">Brawl Project</h1>
                     <Badge className="mt-1 rounded-none" variant="outline">Beta</Badge>
                 </div>
-                    <h2>
+                    <h2 className="items-2">
                         Made by {" "}
                             <a 
                                 href="https://x.com/cessjr_" 
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                className="p-1 outline outline-accent"
+                                className="hover:underline text-neutral-300"
                             >
                                 Cess
                             </a>
