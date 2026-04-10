@@ -170,6 +170,7 @@ export default function App() {
 
       setTextureLoaded(textureData);
     } catch (err) {
+      console.error(err);
       toast.error("The texture was not found", { id: "texture_not_found" });
     } finally {
       setLoadingSelectedTexture(false);
@@ -265,8 +266,6 @@ export default function App() {
                             if (textures.length === 0) {
                               loadTextures();
                             }
-                          } else {
-                            
                           }
                         }}
                       >
