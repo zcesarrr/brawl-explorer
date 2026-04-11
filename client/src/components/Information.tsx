@@ -28,7 +28,7 @@ export default function Information() {
             </div>
             <Separator className="my-2"/>
             <p>
-                Brawl Project built by {" "}
+                Brawl Explorer built by {" "}
                 <a 
                 href="https://x.com/cessjr_" 
                 target="_blank" 
