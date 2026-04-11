@@ -19,13 +19,18 @@ import SearchablePaginatedList, { buttonClassName } from "./components/Searchabl
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover";
 import type { FileOutput } from "./types/models.types";
 
+type MaterialTextureAssignment = {
+  materialName: string;
+  textureUri: string;
+};
+
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
 export default function App() {
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
   const [materials, setMaterials] = useState<string[]>([]);
-  const [selectedTextures, setSelectedTextures] = useState<{ textureUri: string, materialName: string }[]>([]);
+  const [selectedTextures, setSelectedTextures] = useState<MaterialTextureAssignment[]>([]);
 
   const { 
     filteredItems: filteredModels, 
@@ -85,7 +90,26 @@ export default function App() {
           toast.error("The texture was not found", { id: "texture_not_found" });
         },
         onFinished: (output: FileOutput) => {
-          
+          const targetMaterials = material ? [material] : materials;
+
+          if (targetMaterials.length === 0) return;
+
+          setSelectedTextures((prev) => {
+            const next = [...prev];
+
+            targetMaterials.forEach((materialName) => {
+              const index = next.findIndex((item) => item.materialName === materialName);
+
+              if (index >= 0) {
+                next[index] = { materialName, textureUri: output.uri };
+                return;
+              }
+
+              next.push({ materialName, textureUri: output.uri });
+            });
+
+            return next;
+          });
         }
       },
     );
@@ -110,6 +134,7 @@ export default function App() {
               preFetch: () => {
                 removeAllToasts();
                 setTextureLoaded(null);
+                setSelectedTextures([]);
               },
               disableQuitLoadingOnFinally: true,
             }
@@ -137,9 +162,10 @@ export default function App() {
                   loaded={(materials) => { 
                     setLoadingModelViewer(false);
                     setMaterials(materials);
+                    setSelectedTextures((prev) => prev.filter((item) => materials.includes(item.materialName)));
                     if (autoLoadTexture) handleLoadTexture();
                   }}
-                  textureData={textureLoaded}
+                  selectedTextures={selectedTextures}
                 />
                 <div className="absolute left-2 bottom-2">
                   <p className="text-sm text-neutral-300 mb-1">Export</p>
@@ -220,10 +246,9 @@ export default function App() {
                               title="Textures"
                               loading={loadingTextures || loadingSelectedTexture}
                               onSearchChange={(text: string) => setTextureSearch(text)}
-                              selectedItem={textureLoaded?.filename}
                               itemsPerPage={50}
                               inputSearchDefault={textureSearch}
-                              renderList={({ items, selectedItem, disabled }) => (
+                              renderList={({ items, disabled }) => (
                                 <div>
                                   <div className="flex items-center justify-between gap-1 mb-2">
                                     <p className="text-neutral-400">Textures</p>
@@ -235,11 +260,8 @@ export default function App() {
                                         <Popover>
                                           <PopoverTrigger asChild>
                                             <button 
-                                              disabled={disabled || selectedItem === item}
+                                              disabled={disabled}
                                               className={buttonClassName}
-                                              style={{
-                                                backgroundColor: `${selectedItem === item ? "var(--color-accent)" : ""}`,
-                                              }}
                                             >
                                               {item.split("_tex.sctx")[0]}
                                             </button>
@@ -253,10 +275,11 @@ export default function App() {
                                               {materials.map(mat => (
                                                 <li key={mat}>
                                                   <button 
-                                                    className={`${buttonClassName} outline outline-accent`}
+                                                    className={`${buttonClassName} outline outline-accent truncate`}
                                                     onClick={() => {
                                                       handleLoadTexture(item, mat);
                                                     }}
+                                                    disabled={loadingSelectedTexture}
                                                   >
                                                     {mat}
                                                   </button>

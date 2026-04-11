@@ -1,4 +1,3 @@
-import type { FileOutput } from "@/types/models.types";
 import { useEffect, useRef, useState } from "react";
 
 let modelViewerLoader: Promise<unknown> | null = null;
@@ -14,12 +13,13 @@ function loadModelViewerOnce() {
 type ModelViewerProps = {
     src: string;
     loaded: (materials: string[]) => void;
-    textureData: FileOutput | null;
+    selectedTextures: { materialName: string; textureUri: string }[];
 };
 
-export default function ModelViewer({ src, loaded, textureData }: ModelViewerProps) {
+export default function ModelViewer({ src, loaded, selectedTextures }: ModelViewerProps) {
     const modelViewerRef = useRef<any>(null);
     const [viewerReady, setViewerReady] = useState<boolean>(false);
+    const [modelLoadVersion, setModelLoadVersion] = useState<number>(0);
 
     useEffect(() => {
         let mounted = true;
@@ -38,35 +38,22 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
     }, []);
 
     useEffect(() => {
-        const viewer = modelViewerRef.current;
-
-        if (!viewer) return;
-
-        const handleLoad = async () => {
-            loaded(viewer.model.materials.map((item: any) => item.name));
-        };
-
-        viewer.addEventListener("load", handleLoad);
-
-        return () => {
-            viewer.removeEventListener("load", handleLoad);
-        };
-    }, [loaded]);
-
-    useEffect(() => {
         if (!viewerReady) return;
 
         const viewer = modelViewerRef.current;
         if (!viewer) return;
 
-        const handleLoad = () => loaded(viewer.model.materials.map((item: any) => item.name));
+        const handleLoad = () => {
+            loaded(viewer.model.materials.map((item: any) => item.name));
+            setModelLoadVersion((prev) => prev + 1);
+        };
 
         viewer.addEventListener("load", handleLoad);
         return () => viewer.removeEventListener("load", handleLoad);
     }, [viewerReady, loaded]);
 
     useEffect(() => {
-        if (!viewerReady || !textureData) return;
+        if (!viewerReady || selectedTextures.length === 0) return;
 
         const viewer = modelViewerRef.current;
         if (!viewer?.model?.materials) return;
@@ -75,13 +62,27 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
 
         const loadTexture = async () => {
             try {
-                const texture = await viewer.createTexture(textureData.uri);
-                if (cancelled) return;
-
                 const materials = viewer.model.materials;
+                const texturesByUri = new Map<string, any>();
 
-                for (let i = 0; i < materials.length; i ++) {
-                    materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+                for (const assignment of selectedTextures) {
+                    if (!texturesByUri.has(assignment.textureUri)) {
+                        const texture = await viewer.createTexture(assignment.textureUri);
+
+                        if (cancelled) return;
+                        texturesByUri.set(assignment.textureUri, texture);
+                    }
+
+                    const texture = texturesByUri.get(assignment.textureUri);
+
+                    for (let i = 0; i < materials.length; i++) {
+                        if (materials[i].name !== assignment.materialName) continue;
+
+                        const baseColorTexture = materials[i]?.pbrMetallicRoughness?.baseColorTexture;
+                        if (!baseColorTexture) continue;
+
+                        baseColorTexture.setTexture(texture);
+                    }
                 }
             } catch (err) {
                 console.error("Failed to apply texture", err);
@@ -93,7 +94,7 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
         return () => {
             cancelled = true;
         }
-    }, [viewerReady, textureData]);
+    }, [viewerReady, selectedTextures, modelLoadVersion, src]);
 
     if (!viewerReady) {
         return (
