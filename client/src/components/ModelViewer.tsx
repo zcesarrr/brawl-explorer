@@ -1,5 +1,15 @@
 import type { FileOutput } from "@/types/models.types";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+let modelViewerLoader: Promise<unknown> | null = null;
+
+function loadModelViewerOnce() {
+    if (!modelViewerLoader) {
+        modelViewerLoader = import("@google/model-viewer");
+    }
+
+    return modelViewerLoader;
+}
 
 type ModelViewerProps = {
     src: string;
@@ -9,6 +19,23 @@ type ModelViewerProps = {
 
 export default function ModelViewer({ src, loaded, textureData }: ModelViewerProps) {
     const modelViewerRef = useRef<any>(null);
+    const [viewerReady, setViewerReady] = useState<boolean>(false);
+
+    useEffect(() => {
+        let mounted = true;
+
+        loadModelViewerOnce()
+            .then(() => {
+                if (mounted) setViewerReady(true);
+            })
+            .catch((err) => {
+                console.error("Failed to load @google/model-viewer", err);
+            });
+        
+        return () => {
+            mounted = false;
+        }
+    }, []);
 
     useEffect(() => {
         const viewer = modelViewerRef.current;
@@ -27,23 +54,54 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
     }, [loaded]);
 
     useEffect(() => {
-        if (!textureData) return;
+        if (!viewerReady) return;
 
         const viewer = modelViewerRef.current;
-
         if (!viewer) return;
 
-        const loadTexture = async () => {
-            const materials = viewer.model.materials;
-            const texture = await viewer.createTexture(textureData.uri);
+        const handleLoad = () => loaded();
 
-            for (let i = 0; i < materials.length; i ++) {
-                materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+        viewer.addEventListener("load", handleLoad);
+        return () => viewer.removeEventListener("load", handleLoad);
+    }, [viewerReady, loaded]);
+
+    useEffect(() => {
+        if (!viewerReady || !textureData) return;
+
+        const viewer = modelViewerRef.current;
+        if (!viewer?.model?.materials) return;
+
+        let cancelled = false;
+
+        const loadTexture = async () => {
+            try {
+                const texture = await viewer.createTexture(textureData.uri);
+                if (cancelled) return;
+
+                const materials = viewer.model.materials;
+
+                for (let i = 0; i < materials.length; i ++) {
+                    materials[i].pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+                }
+            } catch (err) {
+                console.error("Failed to apply texture", err);
             }
-        }
+        };
 
         loadTexture();
-    }, [textureData]);
+
+        return () => {
+            cancelled = true;
+        }
+    }, [viewerReady, textureData]);
+
+    if (!viewerReady) {
+        return (
+            <div className="w-full h-full flex items-center justify-center bg-neutral-800 text-neutral-300">
+                ...
+            </div>
+        )
+    }
 
     return (
         <model-viewer 
