@@ -1,13 +1,13 @@
 import type { FileOutput } from "@/types/models.types";
 import { useEffect, useRef } from "react";
 
-type Props = {
+type ModelViewerProps = {
     src: string;
     loaded: () => void;
     textureData: FileOutput | null;
 };
 
-export default function ModelViewer({ src, loaded, textureData }: Props) {
+export default function ModelViewer({ src, loaded, textureData }: ModelViewerProps) {
     const modelViewerRef = useRef<any>(null);
 
     useEffect(() => {

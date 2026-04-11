@@ -4,7 +4,7 @@ export default function Information() {
     return (
         <>
             <div>
-                <strong>Open source software used</strong>
+                <strong>Open source software used:</strong>
                 <ul className="flex flex-col gap-4">
                 <Attribution 
                     title="SCTX-Converter — by Daniil-SV"

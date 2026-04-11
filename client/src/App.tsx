@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import ModelsSidebar from "./components/ModelsSidebar";
-import ModelViewer from "./components/ModelViewer";
-import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
-import { House, Info, LoaderCircle, Moon, Sun } from "lucide-react";
-import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
-import Presentation from "./components/Presentation";
-import { useTheme } from "./components/theme-provider";
-import { toast, Toaster, useSonner } from "sonner";
-import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
-import { Checkbox } from "./components/ui/checkbox";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
-import FilesList from "./components/FilesList";
+import { Field, FieldGroup, FieldLabel } from "./components/ui/field";
+import { toast, Toaster, useSonner } from "sonner";
 import { ButtonGroup } from "./components/ui/button-group";
+import { Checkbox } from "./components/ui/checkbox";
+import { Badge } from "./components/ui/badge";
+import { Separator } from "./components/ui/separator";
+import ModelsSidebar from "./components/ModelsSidebar";
 import Information from "./components/Information";
+import FilesList from "./components/FilesList";
+import { House, Info, LoaderCircle, Moon, Sun } from "lucide-react";
+import { useTheme } from "./components/theme-provider";
 import { useItems } from "./hooks/useItems";
+import { getAutoSizeString } from "./libs/models.utils";
+import ModelViewer from "./components/ModelViewer";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -84,7 +84,7 @@ export default function App() {
     );
   };
 
-  const FooterButtonProps = {
+  const TextureButtonProps = {
     variant: "secondary",
     size: "lg",
     disabled: loadingModelViewer || loadingSelectedTexture,
@@ -198,7 +198,7 @@ export default function App() {
                         }}
                       >
                         <DialogTrigger asChild>
-                          <Button {...FooterButtonProps}>Texture Search</Button>
+                          <Button {...TextureButtonProps}>Texture Search</Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
@@ -224,7 +224,7 @@ export default function App() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button {...FooterButtonProps} onClick={() =>handleLoadTexture()}>Auto Texture</Button>
+                      <Button {...TextureButtonProps} onClick={() =>handleLoadTexture()}>Auto Texture</Button>
                     </ButtonGroup>
                     <FieldGroup className="w-32 ml-1">
                       <Field orientation="horizontal">
@@ -295,6 +295,35 @@ export default function App() {
     </SidebarProvider>
   );
 }
+
+
+function Presentation() {
+    return (
+        <div className="flex flex-col w-full h-full justify-center items-center text-neutral-500 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 mt-8">
+                <div className="flex items-center justify-center gap-2">
+                    <h1 className="text-3xl">Brawl Project</h1>
+                    <Badge className="mt-1 rounded-none" variant="outline">Beta</Badge>
+                </div>
+                <h2>
+                    A web tool to visualize and explore Brawl Stars assets
+                </h2>
+            </div>
+            <p className="px-4 pb-4 text-xs">
+                This material is unofficial and is not endorsed by Supercell. For more information see Supercell's Fan Content Policy: {" "}
+                <a 
+                    href="https://www.supercell.com/fan-content-policy" 
+                    target="_blank" 
+                    rel="noreferrer noopener"
+                    className="text-neutral-400 underline"
+                >
+                    www.supercell.com/fan-content-policy.
+                </a>
+            </p>
+        </div>
+    );
+}
+
 
 type ExportButtonProps = {
   disabled: boolean;
