@@ -2,7 +2,20 @@ import type { FileOutput } from "@/types/models.types";
 import { useCallback } from "react";
 import { useState } from "react";
 
-export function useItems() {
+function getSearchResults(search: string, items: string[], exclude?: string[]): string[] {
+  return items.filter(item => {
+    if (exclude?.includes(item)) return false;
+    if (!item) return true;
+
+    const searchWords = search.toLowerCase().trim().split(/\s+/);
+
+    const itemLower = item.toLowerCase();
+
+    return searchWords.every(word => itemLower.includes(word));
+  });
+}
+
+export function useItems(excludedItems: string[]) {
     const [items, setItems] = useState<string[]>([]);
     const [loadingItems, setLoadingItems] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<FileOutput | null>(null);
@@ -88,8 +101,11 @@ export function useItems() {
         }
     }
 
-    return { 
-        items, 
+    const filteredItems = getSearchResults(itemSearch, items, excludedItems);
+
+    return {
+        items,
+        filteredItems, 
         loadingItems, 
         getItems, 
         selectedItem, 

@@ -36,7 +36,7 @@ function getSearchResults(search: string, items: string[], exclude?: string[]): 
 
 export default function App() {
   const { 
-    items: models, 
+    filteredItems: filteredModels, 
     loadingItems: loadingModels, 
     getItems: getModels,
     selectedItem: selectedModel, 
@@ -44,9 +44,8 @@ export default function App() {
     loadingSelectedItem: loadingModelViewer, 
     setLoadingSelectedItem: setLoadingModelViewer, 
     selectItem: selectModel,
-    itemSearch: modelSearch, 
     setItemSearch: setModelSearch 
-  } = useItems();
+  } = useItems(["allie_geo.glb"]);
 
   const [textures, setTextures] = useState<string[]>([]);
   const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
@@ -58,7 +57,6 @@ export default function App() {
 
   const theme = useTheme();
 
-  const filteredModels = getSearchResults(modelSearch, models, ["allie_geo.glb"]);
   const filteredTextures = getSearchResults(textureSearch, textures);
 
   const { toasts } = useSonner();
