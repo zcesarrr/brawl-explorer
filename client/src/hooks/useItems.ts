@@ -15,7 +15,7 @@ function getSearchResults(search: string, items: string[], exclude?: string[]): 
   });
 }
 
-export function useItems(excludedItems: string[]) {
+export function useItems(excludedItems?: string[]) {
     const [items, setItems] = useState<string[]>([]);
     const [loadingItems, setLoadingItems] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<FileOutput | null>(null);
@@ -49,16 +49,11 @@ export function useItems(excludedItems: string[]) {
         endpoint: string, 
         itemName: string, 
         options?: { 
-            booleanCondition?: boolean, 
             disableQuitLoadingOnFinally?: boolean,
             preFetch?: () => void, 
             onFetchError?: () => void 
         }
     ) => {
-        if (options?.booleanCondition) {
-            if (!options.booleanCondition) return;
-        }
-
         setLoadingSelectedItem(true);
         
         if (options?.preFetch) options?.preFetch();

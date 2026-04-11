@@ -4,7 +4,6 @@ import ModelViewer from "./components/ModelViewer";
 import { Separator } from "./components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { House, Info, LoaderCircle, Moon, Sun } from "lucide-react";
-import type { FileOutput } from "./types/models.types";
 import { getAutoSizeString } from "./libs/models.utils";
 import { Button } from "./components/ui/button";
 import Presentation from "./components/Presentation";
@@ -21,20 +20,9 @@ import { useItems } from "./hooks/useItems";
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
-function getSearchResults(search: string, items: string[], exclude?: string[]): string[] {
-  return items.filter(item => {
-    if (exclude?.includes(item)) return false;
-    if (!item) return true;
-
-    const searchWords = search.toLowerCase().trim().split(/\s+/);
-
-    const itemLower = item.toLowerCase();
-
-    return searchWords.every(word => itemLower.includes(word));
-  });
-}
-
 export default function App() {
+  const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
+
   const { 
     filteredItems: filteredModels, 
     loadingItems: loadingModels, 
@@ -47,91 +35,53 @@ export default function App() {
     setItemSearch: setModelSearch 
   } = useItems(["allie_geo.glb"]);
 
-  const [textures, setTextures] = useState<string[]>([]);
-  const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
-  const [textureLoaded, setTextureLoaded] = useState<FileOutput | null>(null);
-  const [loadingSelectedTexture, setLoadingSelectedTexture] = useState<boolean>(false);
-  const [textureSearch, setTextureSearch] = useState<string>("");
-
-  const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
+  const { 
+    filteredItems: filteredTextures,
+    loadingItems: loadingTextures,
+    getItems: getTextures,
+    selectedItem: textureLoaded,
+    setSelectedItem: setTextureLoaded,
+    loadingSelectedItem: loadingSelectedTexture,
+    selectItem: selectTexture,
+    itemSearch: textureSearch,
+    setItemSearch: setTextureSearch,
+  } = useItems();
 
   const theme = useTheme();
-
-  const filteredTextures = getSearchResults(textureSearch, textures);
 
   const { toasts } = useSonner();
 
   useEffect(() => {
-    getModels(`${API_URL}/models`, "models", () => {
-      toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
-    });
+    const start = () => {
+      getModels(`${API_URL}/models`, "models", () => {
+        toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
+      });
 
-    setAutoLoadTexture(localStorage.getItem(AUTO_LOAD_TEXTURE_STORAGE) === "true");
+      setAutoLoadTexture(localStorage.getItem(AUTO_LOAD_TEXTURE_STORAGE) === "true");
+    }
+
+    start();
   }, [getModels]);
 
   const removeAllToasts = () => {
     toasts.forEach(t => toast.dismiss(t.id));
   }
 
-  const loadTextures = async () => {
-    setLoadingTextures(true);
-
-    try {
-      const res = await fetch(`${API_URL}/textures`);
-
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        console.error(json.error || "Request failed");
-        return;
-      }
-
-      setTextures(json.data.textures);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingTextures(false);
-    }
-  };
-
   const handleLoadTexture = async (filename?: string) => {
     if (!selectedModel) return;
-
-    setLoadingSelectedTexture(true);
 
     const modelNameSplit = selectedModel.filename.split("_geo.glb");
     const textureName = filename ?? `${modelNameSplit[0]}_tex.sctx`;
 
-    try {
-      const res = await fetch(`${API_URL}/parse-texture`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    selectTexture(
+      `${API_URL}/parse-texture`,
+      textureName,
+      {
+        onFetchError() {
+          toast.error("The texture was not found", { id: "texture_not_found" });
         },
-        body: JSON.stringify({
-          filename: textureName,
-        }),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        console.error(json.error || "Request failed");
-      }
-
-      const textureData = {
-        uri: json.data.uri,
-        filename: json.data.originalName,
-        size: json.data.size,
-      }
-
-      setTextureLoaded(textureData);
-    } catch (err) {
-      console.error(err);
-      toast.error("The texture was not found", { id: "texture_not_found" });
-    } finally {
-      setLoadingSelectedTexture(false);
-    }
+      },
+    );
   };
 
   return (
@@ -232,8 +182,11 @@ export default function App() {
                       <Dialog 
                         onOpenChange={open => {
                           if (open) {
-                            if (textures.length === 0) {
-                              loadTextures();
+                            if (filteredTextures.length === 0) {
+                              getTextures(
+                                `${API_URL}/textures`,
+                                "textures"
+                              );
                             }
                           }
                         }}
