@@ -16,6 +16,7 @@ import { useTheme } from "./components/theme-provider";
 import { useItems } from "./hooks/useItems";
 import { getAutoSizeString } from "./libs/models.utils";
 import ModelViewer from "./components/ModelViewer";
+import SearchablePaginatedList, { buttonClassName } from "./components/SearchablePaginatedList";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -206,15 +207,34 @@ export default function App() {
                             <DialogDescription>Choose a texture from this list to apply</DialogDescription>
                           </DialogHeader>
                           <div className="max-h-90 overflow-hidden">
-                            <FilesList
-                              files={filteredTextures}
+                            <SearchablePaginatedList
+                              items={filteredTextures}
+                              searchPlaceholder="Search a texture"
+                              title="Textures"
                               loading={loadingTextures || loadingSelectedTexture}
-                              splitLabel="_tex.sctx"
-                              onFileSearchChange={(text: string) => setTextureSearch(text)}
-                              selectedFile={textureLoaded?.filename}
-                              onFileClick={(textureName) => handleLoadTexture(textureName)}
-                              filesPerPage={50}
-                              inputDefault={textureSearch}
+                              onSearchChange={(text: string) => setTextureSearch(text)}
+                              selectedItem={textureLoaded?.filename}
+                              onItemClick={(textureName) => handleLoadTexture(textureName)}
+                              itemsPerPage={50}
+                              inputSearchDefault={textureSearch}
+                              renderList={({ items, offset, selectedItem, disabled, onItemClick }) => (
+                                <ul className="flex gap-1 flex-col">
+                                  {items.map((item, index) => (
+                                    <li key={index}>
+                                      <button 
+                                        disabled={disabled || selectedItem === item}
+                                        onClick={() => onItemClick?.(item)}
+                                        className={buttonClassName}
+                                        style={{
+                                          backgroundColor: `${selectedItem === item ? "var(--color-accent)" : ""}`,
+                                        }}
+                                      >
+                                        {item.split("_tex.sctx")[0]}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
                             />
                           </div>
                           <DialogFooter>

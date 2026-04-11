@@ -123,7 +123,7 @@ export default function SearchablePaginatedList({
                             type="button"
                             disabled={disabled || selectedItem === item}
                             onClick={() => onItemClick?.(item)}
-                            className="hover:bg-accent/70 data-[active=true]:bg-accent flex w-full items-center rounded-md px-2 py-1 text-left disabled:cursor-not-allowed disabled:opacity-50"
+                            className={buttonClassName}
                             data-active={selectedItem === item}
                         >
                             <div className="flex items-center gap-1.5 truncate">
@@ -226,3 +226,5 @@ export default function SearchablePaginatedList({
         </div>
     );
 }
+
+export const buttonClassName = "hover:bg-accent/70 data-[active=true]:bg-accent flex w-full items-center rounded-md px-2 h-8 py-1 text-left disabled:cursor-not-allowed disabled:opacity-50";
