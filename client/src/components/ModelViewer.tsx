@@ -5,7 +5,7 @@ let modelViewerLoader: Promise<unknown> | null = null;
 
 function loadModelViewerOnce() {
     if (!modelViewerLoader) {
-        modelViewerLoader = import("@google/model-viewer");
+        modelViewerLoader = import("@google/model-viewer/dist/model-viewer");
     }
 
     return modelViewerLoader;
