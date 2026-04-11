@@ -84,7 +84,7 @@ export default function App() {
     );
   };
 
-  const TextureButtonProps = {
+  const TextureButtonProps: { variant: "secondary"; size: "lg"; disabled: boolean } = {
     variant: "secondary",
     size: "lg",
     disabled: loadingModelViewer || loadingSelectedTexture,
