@@ -13,7 +13,7 @@ function loadModelViewerOnce() {
 
 type ModelViewerProps = {
     src: string;
-    loaded: () => void;
+    loaded: (materials: string[]) => void;
     textureData: FileOutput | null;
 };
 
@@ -43,7 +43,7 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
         if (!viewer) return;
 
         const handleLoad = async () => {
-            loaded();
+            loaded(viewer.model.materials.map((item: any) => item.name));
         };
 
         viewer.addEventListener("load", handleLoad);
@@ -59,7 +59,7 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
         const viewer = modelViewerRef.current;
         if (!viewer) return;
 
-        const handleLoad = () => loaded();
+        const handleLoad = () => loaded(viewer.model.materials.map((item: any) => item.name));
 
         viewer.addEventListener("load", handleLoad);
         return () => viewer.removeEventListener("load", handleLoad);

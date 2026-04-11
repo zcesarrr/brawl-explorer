@@ -10,19 +10,20 @@ import { Badge } from "./components/ui/badge";
 import { Separator } from "./components/ui/separator";
 import ModelsSidebar from "./components/ModelsSidebar";
 import Information from "./components/Information";
-import FilesList from "./components/FilesList";
 import { House, Info, LoaderCircle, Moon, Sun } from "lucide-react";
 import { useTheme } from "./components/theme-provider";
 import { useItems } from "./hooks/useItems";
 import { getAutoSizeString } from "./libs/models.utils";
 import ModelViewer from "./components/ModelViewer";
 import SearchablePaginatedList, { buttonClassName } from "./components/SearchablePaginatedList";
+import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
 export default function App() {
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
+  const [materials, setMaterials] = useState<string[]>([]);
 
   const { 
     filteredItems: filteredModels, 
@@ -128,8 +129,9 @@ export default function App() {
               <div className="relative w-full h-full">
                 <ModelViewer 
                   src={selectedModel.uri}
-                  loaded={() => { 
-                    setLoadingModelViewer(false)
+                  loaded={(materials) => { 
+                    setLoadingModelViewer(false);
+                    setMaterials(materials);
                     if (autoLoadTexture) handleLoadTexture();
                   }}
                   textureData={textureLoaded}
@@ -217,23 +219,50 @@ export default function App() {
                               onItemClick={(textureName) => handleLoadTexture(textureName)}
                               itemsPerPage={50}
                               inputSearchDefault={textureSearch}
-                              renderList={({ items, offset, selectedItem, disabled, onItemClick }) => (
-                                <ul className="flex gap-1 flex-col">
-                                  {items.map((item, index) => (
-                                    <li key={index}>
-                                      <button 
-                                        disabled={disabled || selectedItem === item}
-                                        onClick={() => onItemClick?.(item)}
-                                        className={buttonClassName}
-                                        style={{
-                                          backgroundColor: `${selectedItem === item ? "var(--color-accent)" : ""}`,
-                                        }}
-                                      >
-                                        {item.split("_tex.sctx")[0]}
-                                      </button>
-                                    </li>
-                                  ))}
-                                </ul>
+                              renderList={({ items, selectedItem, disabled, onItemClick }) => (
+                                <div>
+                                  <div className="flex items-center justify-between gap-1 mb-2">
+                                    <p className="text-neutral-400">Textures</p>
+                                    <span className="text-[10px] text-neutral-500">{items.length} results</span>
+                                  </div>
+                                  <ul className="flex gap-1 flex-col">
+                                    {items.map((item, index) => (
+                                      <li key={index}>
+                                        <Popover>
+                                          <PopoverTrigger asChild>
+                                            <button 
+                                              disabled={disabled || selectedItem === item}
+                                              className={buttonClassName}
+                                              style={{
+                                                backgroundColor: `${selectedItem === item ? "var(--color-accent)" : ""}`,
+                                              }}
+                                            >
+                                              {item.split("_tex.sctx")[0]}
+                                            </button>
+                                          </PopoverTrigger>
+                                          <PopoverContent>
+                                            <PopoverHeader>
+                                              <PopoverTitle>Materials</PopoverTitle>
+                                              <PopoverDescription>Choose a material to apply the selected texture</PopoverDescription>
+                                            </PopoverHeader>
+                                            <ul className="flex flex-col gap-1.5">
+                                              {materials.map(mat => (
+                                                <li key={mat}>
+                                                  <button 
+                                                    className={`${buttonClassName} outline outline-accent`}
+                                                    onClick={() => onItemClick?.(item)}
+                                                  >
+                                                    {mat}
+                                                  </button>
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </PopoverContent>
+                                        </Popover>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
                               )}
                             />
                           </div>
