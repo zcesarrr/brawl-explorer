@@ -305,7 +305,7 @@ function Presentation() {
                     <h1 className="text-3xl">Brawl Explorer</h1>
                     <Badge className="mt-1 rounded-none" variant="outline">Beta</Badge>
                 </div>
-                <h2>
+                <h2 className="px-2">
                     A web tool to visualize and explore Brawl Stars assets
                 </h2>
             </div>
