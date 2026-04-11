@@ -84,6 +84,12 @@ export default function App() {
     );
   };
 
+  const FooterButtonProps = {
+    variant: "secondary",
+    size: "lg",
+    disabled: loadingModelViewer || loadingSelectedTexture,
+  };
+
   return (
     <SidebarProvider className="relative">
       <ModelsSidebar 
@@ -192,13 +198,7 @@ export default function App() {
                         }}
                       >
                         <DialogTrigger asChild>
-                          <Button 
-                            variant="secondary" 
-                            size="lg"
-                            disabled={loadingModelViewer || loadingSelectedTexture}
-                          >
-                            Texture Search
-                          </Button>
+                          <Button {...FooterButtonProps}>Texture Search</Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
@@ -224,16 +224,7 @@ export default function App() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button 
-                        variant="secondary" 
-                        size="lg"
-                        disabled={loadingModelViewer || loadingSelectedTexture}
-                        onClick={() => {
-                          handleLoadTexture();
-                        }}
-                      >
-                        Auto Texture
-                      </Button>
+                      <Button {...FooterButtonProps} onClick={() =>handleLoadTexture()}>Auto Texture</Button>
                     </ButtonGroup>
                     <FieldGroup className="w-32 ml-1">
                       <Field orientation="horizontal">
