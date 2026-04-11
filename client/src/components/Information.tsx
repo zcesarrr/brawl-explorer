@@ -7,11 +7,11 @@ export default function Information() {
                 <strong>Open source software used:</strong>
                 <ul className="flex flex-col gap-4">
                 <Attribution 
-                    title="SCTX-Converter — by Daniil-SV"
+                    title="SCTX-Converter - by Daniil-SV"
                     link="https://github.com/Daniil-SV/SCTX-Converter"
                 />
                 <Attribution 
-                    title="Supercell-Flat-Converter — by Daniil-SV"
+                    title="Supercell-Flat-Converter - by Daniil-SV"
                     link="https://github.com/Daniil-SV/Supercell-Flat-Converter"
                 />
                 <Attribution
