@@ -17,6 +17,7 @@ import { getAutoSizeString } from "./libs/models.utils";
 import ModelViewer from "./components/ModelViewer";
 import SearchablePaginatedList, { buttonClassName } from "./components/SearchablePaginatedList";
 import { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger } from "./components/ui/popover";
+import type { FileOutput } from "./types/models.types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
@@ -24,6 +25,7 @@ const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 export default function App() {
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
   const [materials, setMaterials] = useState<string[]>([]);
+  const [selectedTextures, setSelectedTextures] = useState<{ textureUri: string, materialName: string }[]>([]);
 
   const { 
     filteredItems: filteredModels, 
@@ -69,7 +71,7 @@ export default function App() {
     toasts.forEach(t => toast.dismiss(t.id));
   }
 
-  const handleLoadTexture = async (filename?: string) => {
+  const handleLoadTexture = async (filename?: string, material?: string) => {
     if (!selectedModel) return;
 
     const modelNameSplit = selectedModel.filename.split("_geo.glb");
@@ -79,9 +81,12 @@ export default function App() {
       `${API_URL}/parse-texture`,
       textureName,
       {
-        onFetchError() {
+        onFetchError: () => {
           toast.error("The texture was not found", { id: "texture_not_found" });
         },
+        onFinished: (output: FileOutput) => {
+          
+        }
       },
     );
   };
@@ -216,10 +221,9 @@ export default function App() {
                               loading={loadingTextures || loadingSelectedTexture}
                               onSearchChange={(text: string) => setTextureSearch(text)}
                               selectedItem={textureLoaded?.filename}
-                              onItemClick={(textureName) => handleLoadTexture(textureName)}
                               itemsPerPage={50}
                               inputSearchDefault={textureSearch}
-                              renderList={({ items, selectedItem, disabled, onItemClick }) => (
+                              renderList={({ items, selectedItem, disabled }) => (
                                 <div>
                                   <div className="flex items-center justify-between gap-1 mb-2">
                                     <p className="text-neutral-400">Textures</p>
@@ -250,7 +254,9 @@ export default function App() {
                                                 <li key={mat}>
                                                   <button 
                                                     className={`${buttonClassName} outline outline-accent`}
-                                                    onClick={() => onItemClick?.(item)}
+                                                    onClick={() => {
+                                                      handleLoadTexture(item, mat);
+                                                    }}
                                                   >
                                                     {mat}
                                                   </button>

@@ -52,6 +52,7 @@ export function useItems(excludedItems?: string[]) {
             disableQuitLoadingOnFinally?: boolean,
             preFetch?: () => void, 
             onFetchError?: () => void 
+            onFinished?: (output: FileOutput) => void
         }
     ) => {
         setLoadingSelectedItem(true);
@@ -78,11 +79,13 @@ export function useItems(excludedItems?: string[]) {
                 return;
             }
 
-            setSelectedItem({
+            const data = {
                 uri: json.data.uri,
                 filename: json.data.originalName,
                 size: json.data.size,
-            });
+            }
+
+            setSelectedItem(data);
 
             if (options?.disableQuitLoadingOnFinally) {
                 if (!options.disableQuitLoadingOnFinally) {
@@ -91,6 +94,8 @@ export function useItems(excludedItems?: string[]) {
             } else {
                 setLoadingSelectedItem(false);
             }
+
+            if (options?.onFinished) options.onFinished(data);
         } catch (err) {
             console.error(err);
             setLoadingSelectedItem(false);
