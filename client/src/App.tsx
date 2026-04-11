@@ -42,14 +42,16 @@ export default function App() {
     setSelectedItem: setSelectedModel, 
     loadingSelectedItem: loadingModelViewer, 
     setLoadingSelectedItem: setLoadingModelViewer, 
+    selectItem: selectModel,
     itemSearch: modelSearch, 
     setItemSearch: setModelSearch 
   } = useItems({
     endpoint: `${API_URL}/models`,
     itemsName: "models",
+    onFetchError: () => {
+      toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
+    },
   });
-
-  
 
   const [textures, setTextures] = useState<string[]>([]);
   const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
@@ -72,41 +74,6 @@ export default function App() {
 
   const removeAllToasts = () => {
     toasts.forEach(t => toast.dismiss(t.id));
-  }
-
-  const handleModelClick = async (modelName: string) => {
-    setLoadingModelViewer(true);
-
-    removeAllToasts();
-    setTextureLoaded(null);
-
-    try {
-      const res = await fetch(`${API_URL}/parse-model`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: modelName,
-        }),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        console.error(json.error || "Request failed");
-        return;
-      }
-
-      setSelectedModel({
-        uri: json.data.uri,
-        filename: json.data.originalName,
-        size: json.data.size,
-      });
-
-    } catch (err) {
-      console.error(err);
-    }
   }
 
   const loadTextures = async () => {
@@ -133,10 +100,10 @@ export default function App() {
   const handleLoadTexture = async (filename?: string) => {
     if (!selectedModel) return;
 
+    setLoadingSelectedTexture(true);
+
     const modelNameSplit = selectedModel.filename.split("_geo.glb");
     const textureName = filename ?? `${modelNameSplit[0]}_tex.sctx`;
-
-    setLoadingSelectedTexture(true);
 
     try {
       const res = await fetch(`${API_URL}/parse-texture`, {
@@ -175,7 +142,18 @@ export default function App() {
       <ModelsSidebar 
         models={filteredModels} 
         disabled={loadingModelViewer || loadingSelectedTexture}
-        onModelClick={(modelName) => handleModelClick(modelName)}
+        onModelClick={(modelName) => 
+          selectModel(
+            `${API_URL}/parse-model`, 
+            modelName, 
+            {
+              preFetch: () => {
+                removeAllToasts();
+                setTextureLoaded(null);
+              },
+            }
+          )
+        }
         selectedModel={selectedModel ? selectedModel.filename : null}
         onModelSearchChange={(text) => setModelSearch(text)}
         loading={loadingModels}

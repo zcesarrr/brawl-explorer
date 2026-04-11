@@ -30,7 +30,6 @@ export function useItems({ endpoint, itemsName, onFetchError }: Props) {
                 }
 
                 setItems(json.data[itemsName]);
-                console.log(json.data[itemsName]);
             } catch (err) {
                 console.error(err);
                 if (onFetchError) onFetchError();
@@ -40,7 +39,60 @@ export function useItems({ endpoint, itemsName, onFetchError }: Props) {
         }
 
         getItems();
-    }, [endpoint, itemsName, onFetchError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [endpoint, itemsName]);
 
-    return { items, loadingItems, selectedItem, setSelectedItem, loadingSelectedItem, setLoadingSelectedItem, itemSearch, setItemSearch };
+    const selectItem = async (
+        endpoint: string, 
+        itemName: string, 
+        options?: { 
+            booleanCondition?: boolean, 
+            disableLoadingOnFinally?: boolean,
+            preFetch?: () => void, 
+            onFetchError?: () => void 
+        }
+    ) => {
+        if (options?.booleanCondition) {
+            if (!options.booleanCondition) return;
+        }
+
+        setLoadingSelectedItem(true);
+        
+        if (options?.preFetch) options?.preFetch();
+        
+        try {
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    filename: itemName,
+                }),
+            });
+
+            const json = await res.json();
+
+            if (!res.ok || !json.success) {
+                console.error(json.error || "Request failed");
+                if (options?.onFetchError) options?.onFetchError();
+                return;
+            }
+
+            setSelectedItem({
+                uri: json.data.uri,
+                filename: json.data.originalName,
+                size: json.data.size,
+            });
+        } catch (err) {
+            console.error(err);
+            if (options?.onFetchError) options?.onFetchError();
+        } finally {
+            if (options?.disableLoadingOnFinally) {
+                if (options.disableLoadingOnFinally) setLoadingSelectedItem(false);
+            }
+        }
+    }
+
+    return { items, loadingItems, selectedItem, setSelectedItem, loadingSelectedItem, setLoadingSelectedItem, selectItem, itemSearch, setItemSearch };
 }
