@@ -1,5 +1,5 @@
 import type { FileOutput } from "@/types/models.types";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useState } from "react";
 
 function getSearchResults(search: string, items: string[], exclude?: string[]): string[] {
@@ -73,6 +73,7 @@ export function useItems(excludedItems?: string[]) {
 
             if (!res.ok || !json.success) {
                 console.error(json.error || "Request failed");
+                setLoadingSelectedItem(false);
                 if (options?.onFetchError) options?.onFetchError();
                 return;
             }
@@ -82,10 +83,7 @@ export function useItems(excludedItems?: string[]) {
                 filename: json.data.originalName,
                 size: json.data.size,
             });
-        } catch (err) {
-            console.error(err);
-            if (options?.onFetchError) options?.onFetchError();
-        } finally {
+
             if (options?.disableQuitLoadingOnFinally) {
                 if (!options.disableQuitLoadingOnFinally) {
                     setLoadingSelectedItem(false);
@@ -93,10 +91,17 @@ export function useItems(excludedItems?: string[]) {
             } else {
                 setLoadingSelectedItem(false);
             }
+        } catch (err) {
+            console.error(err);
+            setLoadingSelectedItem(false);
+            if (options?.onFetchError) options?.onFetchError();
         }
     }
 
-    const filteredItems = getSearchResults(itemSearch, items, excludedItems);
+    const filteredItems = useMemo(
+        () => getSearchResults(itemSearch, items, excludedItems), 
+        [excludedItems, itemSearch, items]
+    );
 
     return {
         items,
