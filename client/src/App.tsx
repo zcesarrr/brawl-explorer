@@ -38,6 +38,7 @@ export default function App() {
   const { 
     items: models, 
     loadingItems: loadingModels, 
+    getItems: getModels,
     selectedItem: selectedModel, 
     setSelectedItem: setSelectedModel, 
     loadingSelectedItem: loadingModelViewer, 
@@ -45,13 +46,7 @@ export default function App() {
     selectItem: selectModel,
     itemSearch: modelSearch, 
     setItemSearch: setModelSearch 
-  } = useItems({
-    endpoint: `${API_URL}/models`,
-    itemsName: "models",
-    onFetchError: () => {
-      toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
-    },
-  });
+  } = useItems();
 
   const [textures, setTextures] = useState<string[]>([]);
   const [loadingTextures, setLoadingTextures] = useState<boolean>(false);
@@ -69,8 +64,12 @@ export default function App() {
   const { toasts } = useSonner();
 
   useEffect(() => {
+    getModels(`${API_URL}/models`, "models", () => {
+      toast.error("Connection failed", { id: "connection_error", description: "Something went wrong. Try again later!", duration: 99999 });
+    });
+
     setAutoLoadTexture(localStorage.getItem(AUTO_LOAD_TEXTURE_STORAGE) === "true");
-  }, []);
+  }, [getModels]);
 
   const removeAllToasts = () => {
     toasts.forEach(t => toast.dismiss(t.id));
@@ -151,6 +150,7 @@ export default function App() {
                 removeAllToasts();
                 setTextureLoaded(null);
               },
+              disableQuitLoadingOnFinally: true,
             }
           )
         }

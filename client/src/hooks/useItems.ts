@@ -1,53 +1,43 @@
 import type { FileOutput } from "@/types/models.types";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import { useState } from "react";
 
-type Props = {
-    endpoint: string;
-    itemsName: string;
-    onFetchError?: () => void;
-};
-
-export function useItems({ endpoint, itemsName, onFetchError }: Props) {
+export function useItems() {
     const [items, setItems] = useState<string[]>([]);
     const [loadingItems, setLoadingItems] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<FileOutput | null>(null);
     const [loadingSelectedItem, setLoadingSelectedItem] = useState<boolean>(false);
     const [itemSearch, setItemSearch] = useState<string>("");
 
-    useEffect(() => {
-        const getItems = async () => {
-            setLoadingItems(true);
+    const getItems = useCallback(async (endpoint: string, itemsName: string, onFetchError?: () => void) => {
+        setLoadingItems(true);
 
-            try {
-                const res = await fetch(endpoint);
+        try {
+            const res = await fetch(endpoint);
 
-                const json = await res.json();
+            const json = await res.json();
 
-                if (!res.ok || !json.success) {
-                    console.error(json.error || "Request failed");
-                    if (onFetchError) onFetchError();
-                    return;
-                }
-
-                setItems(json.data[itemsName]);
-            } catch (err) {
-                console.error(err);
+            if (!res.ok || !json.success) {
+                console.error(json.error || "Request failed");
                 if (onFetchError) onFetchError();
-            } finally {
-                setLoadingItems(false);
+                return;
             }
-        }
 
-        getItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [endpoint, itemsName]);
+            setItems(json.data[itemsName]);
+        } catch (err) {
+            console.error(err);
+            if (onFetchError) onFetchError();
+        } finally {
+            setLoadingItems(false);
+        }
+    }, []);
 
     const selectItem = async (
         endpoint: string, 
         itemName: string, 
         options?: { 
             booleanCondition?: boolean, 
-            disableLoadingOnFinally?: boolean,
+            disableQuitLoadingOnFinally?: boolean,
             preFetch?: () => void, 
             onFetchError?: () => void 
         }
@@ -88,11 +78,26 @@ export function useItems({ endpoint, itemsName, onFetchError }: Props) {
             console.error(err);
             if (options?.onFetchError) options?.onFetchError();
         } finally {
-            if (options?.disableLoadingOnFinally) {
-                if (options.disableLoadingOnFinally) setLoadingSelectedItem(false);
+            if (options?.disableQuitLoadingOnFinally) {
+                if (!options.disableQuitLoadingOnFinally) {
+                    setLoadingSelectedItem(false);
+                }
+            } else {
+                setLoadingSelectedItem(false);
             }
         }
     }
 
-    return { items, loadingItems, selectedItem, setSelectedItem, loadingSelectedItem, setLoadingSelectedItem, selectItem, itemSearch, setItemSearch };
+    return { 
+        items, 
+        loadingItems, 
+        getItems, 
+        selectedItem, 
+        setSelectedItem, 
+        loadingSelectedItem, 
+        setLoadingSelectedItem, 
+        selectItem, 
+        itemSearch, 
+        setItemSearch,
+    };
 }
