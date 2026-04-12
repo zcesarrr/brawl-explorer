@@ -16,6 +16,7 @@ import { useTheme } from "./components/theme-provider";
 import { useItems } from "./hooks/useItems";
 import { getAutoSizeString } from "./libs/models.utils";
 import ModelViewer from "./components/ModelViewer";
+import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 
 const excludedModels = ["attack_geo.glb", "walk_geo.glb", "idle_geo.glb", "attack_geo.glb", "win_geo.glb", "lose_geo.glb", "pushback_geo.glb"];
 
@@ -181,6 +182,24 @@ export default function App() {
                   }}
                   textureData={textureLoaded}
                 />
+                <div className="absolute top-2 left-2">
+                  <ToggleGroup type="multiple" className="bg-primary text-primary-foreground outline outline-bg-primary">
+                    <ToggleGroupItem 
+                      value="mat1"
+                      style={{
+                        
+                      }}
+                    >
+                      Material 1
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="mat2">
+                      Material 2
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="mat3">
+                      Material 3
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
                 <div className="absolute left-2 bottom-2">
                   <p className="text-sm text-neutral-300 mb-1">Export as:</p>
                   <div className="flex gap-1 items-center">
