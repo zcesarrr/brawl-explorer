@@ -38,7 +38,9 @@ export default function Information() {
                 Cess
                 </a>
             </p>
-            <strong>This application is still in development</strong>
+            <strong>This application is still in development.</strong><br /><br />
+            <p>Please feel free to contact me if you find any bugs or questions:</p>
+            <p>cesarz.contact@gmail.com</p>
         </>
     )
 }
