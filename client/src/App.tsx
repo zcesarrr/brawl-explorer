@@ -22,8 +22,20 @@ const excludedModels = ["attack_geo.glb", "walk_geo.glb", "idle_geo.glb", "attac
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
+const handleDownload = (uri: string, filename: string) => {
+  const link = document.createElement("a");
+
+  link.href = uri;
+  link.download = filename;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export default function App() {
   const [autoLoadTexture, setAutoLoadTexture] = useState<boolean>(false);
+  const [downloading, setDownloading]  = useState<boolean>(false);
 
   const { 
     filteredItems: filteredModels, 
@@ -86,6 +98,40 @@ export default function App() {
     );
   };
 
+  const handleFbxClick = async () => {
+    if (!selectedModel) return;
+
+    setDownloading(true);
+
+    const formData = new FormData();
+    const blob = await ((await fetch(selectedModel.uri)).blob());
+    const file = new File([blob], "model.glb", {type: "model/gltf-binary"});
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(`${API_URL}/glb-to-fbx`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        console.error(json.error || res.statusText);
+        toast.error("Conversion failed", { id: "conversion_failed", description: "An unknown error has ocurred" });
+        return;
+      }
+
+      const data = json.data;
+      handleDownload(data.uri, `${selectedModel.filename.split(".glb")[0]}.fbx`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Conversion failed", { id: "conversion_failed", description: "An unknown error has ocurred" });
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   const TextureButtonProps: { variant: "secondary"; size: "lg"; disabled: boolean } = {
     variant: "secondary",
     size: "lg",
@@ -96,7 +142,7 @@ export default function App() {
     <SidebarProvider className="relative">
       <ModelsSidebar 
         models={filteredModels} 
-        disabled={loadingModelViewer || loadingSelectedTexture}
+        disabled={loadingModelViewer || loadingSelectedTexture || downloading}
         onModelClick={(modelName) => 
           selectModel(
             `${API_URL}/parse-model`, 
@@ -137,18 +183,20 @@ export default function App() {
                 />
                 <div className="absolute left-2 bottom-2">
                   <p className="text-sm text-neutral-300 mb-1">Export as:</p>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 items-center">
+                    {downloading && <LoaderCircle className="animate-spin" />}
                     <ButtonGroup>
                       <ButtonGroup>
                         <ExportButton 
-                          disabled={loadingModelViewer} 
+                          disabled={loadingModelViewer || downloading} 
                           fileMetadata={selectedModel} 
                           label=".glb"
                         />
                         <ExportButton 
-                          disabled={loadingModelViewer} 
+                          disabled={loadingModelViewer || downloading} 
                           fileMetadata={selectedModel} 
                           label=".fbx"
+                          onClick={() => handleFbxClick()}
                         />
                       </ButtonGroup>
                       <ButtonGroup>
@@ -339,26 +387,20 @@ type ExportButtonProps = {
   disabled: boolean;
   fileMetadata?: { uri: string, filename: string } | null;
   label: string;
+  onClick?: () => void;
 };
 
-function ExportButton({ disabled, fileMetadata, label }: ExportButtonProps) {
+function ExportButton({ disabled, fileMetadata, label, onClick }: ExportButtonProps) {
   return (
     <Button 
       variant="default" 
       size="lg"
       disabled={disabled}
-      onClick={() => {
+      onClick={!onClick ? () => {
         if (!fileMetadata) return;
 
-        const link = document.createElement("a");
-
-        link.href = fileMetadata.uri;
-        link.download = fileMetadata.filename;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }}
+        handleDownload(fileMetadata.uri, fileMetadata.filename);
+      } : () => onClick()}
     >
       {label}
     </Button>

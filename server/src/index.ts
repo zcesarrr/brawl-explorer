@@ -5,19 +5,53 @@ import type { Express, NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import fs from "fs/promises";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
+import multer from "multer";
+import { randomUUID } from "crypto";
 import { convertModel } from "./libs/convert-model.js";
 import { convertTexture } from "./libs/convert-texture.js";
+import { convertGlbToFbx } from "./libs/glb-to-fbx.js";
 
 const assetsDirectory = process.env.ASSETS_DIRECTORY || "";
+const uploadDirectory = path.join(process.cwd(), "temp", "uploads");
 
 const PORT = Number(process.env.PORT);
+
+if (!existsSync(uploadDirectory)) {
+    mkdirSync(uploadDirectory, { recursive: true });
+}
+
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: (_req, _file, cb) => {
+            cb(null, uploadDirectory);
+        },
+        filename: (_req, file, cb) => {
+            const extension = path.extname(file.originalname) || ".glb";
+            cb(null, `${randomUUID()}${extension}`);
+        },
+    }),
+    limits: {
+        fileSize: 10 * 1024 * 1024,
+    },
+    fileFilter: (_req, file, cb) => {
+        const extension = path.extname(file.originalname).toLowerCase();
+        if (extension !== ".glb") {
+            cb(new Error("Only .glb files are allowed"));
+            return;
+        }
+
+        cb(null, true);
+    },
+});
 
 const app: Express = express();
 app.use(cors({
     origin: process.env.ORIGIN_ALLOWED?.split(","),
     optionsSuccessStatus: 200,
 }));
+app.use(express.json({ limit: "20mb" }))
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(helmet());
@@ -79,6 +113,33 @@ app.post("/parse-model", async (req: Request, res: Response) => {
         return res.status(500).json({
             success: false,
             error: result.error ?? "Failed to convert model",
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: result,
+    });
+});
+
+app.post("/glb-to-fbx", upload.single("file"), async (req: Request, res: Response) => {
+    const uploadedFilePath = req.file?.path;
+
+    if (!uploadedFilePath) {
+        return res.status(400).json({
+            success: false,
+            error: "file is required",
+        });
+    }
+
+    const result = await convertGlbToFbx(uploadedFilePath);
+
+    await fs.unlink(uploadedFilePath).catch(() => {});
+
+    if (!result.success) {
+        return res.status(500).json({
+            success: false,
+            error: result.error ?? "Conversion failed",
         });
     }
 
