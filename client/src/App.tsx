@@ -134,7 +134,7 @@ export default function App() {
                   textureData={textureLoaded}
                 />
                 <div className="absolute left-2 bottom-2">
-                  <p className="text-sm text-neutral-300 mb-1">Export</p>
+                  <p className="text-sm text-neutral-300 mb-1">Export as:</p>
                   <div className="flex gap-1">
                     <ButtonGroup>
                       <ExportButton 
