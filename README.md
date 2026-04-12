@@ -1,4 +1,3 @@
-
 # Brawl Explorer
 
 Easily explore and export Brawl Stars 3D assets!
@@ -12,6 +11,7 @@ This project has separate folders for the client and the server. All node module
 
 The server has more external dependencies in order for the system to work:
 - Brawl Stars SC3D folder
+- Python 3 + pip
 - Blender 4.5+ (only if you want the .fbx conversion)
 - Wine if you use Linux
 
@@ -23,6 +23,8 @@ PORT=3000
 ASSETS_DIRECTORY=Brawl Stars SC3D directory path
 BLENDER_DIRECTORY=Blender executable path
 ```
+Install the Python dependencies inside ```server/src/libs/supercell-flat-converter``` by running ```python3 pip install -r requirements.txt```
+
 
 The client only has one environment variable to configure:
 ```bash
