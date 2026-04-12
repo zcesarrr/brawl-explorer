@@ -2,9 +2,10 @@ import type { FileOutput } from "@/types/models.types";
 import { useCallback, useMemo } from "react";
 import { useState } from "react";
 
-function getSearchResults(search: string, items: string[], exclude?: string[]): string[] {
+function getSearchResults(search: string, items: string[], exclude?: string[], excludeEnds?: string[]): string[] {
   return items.filter(item => {
     if (exclude?.includes(item)) return false;
+        if (excludeEnds?.some(word => item.endsWith(word))) return false;
     if (!item) return true;
 
     const searchWords = search.toLowerCase().trim().split(/\s+/);
@@ -15,7 +16,7 @@ function getSearchResults(search: string, items: string[], exclude?: string[]): 
   });
 }
 
-export function useItems(excludedItems?: string[]) {
+export function useItems(excludedItems?: string[], excludedItemsEndsWith?: string[]) {
     const [items, setItems] = useState<string[]>([]);
     const [loadingItems, setLoadingItems] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<FileOutput | null>(null);
@@ -99,8 +100,8 @@ export function useItems(excludedItems?: string[]) {
     }
 
     const filteredItems = useMemo(
-        () => getSearchResults(itemSearch, items, excludedItems), 
-        [excludedItems, itemSearch, items]
+        () => getSearchResults(itemSearch, items, excludedItems, excludedItemsEndsWith), 
+        [excludedItems, itemSearch, items, excludedItemsEndsWith]
     );
 
     return {

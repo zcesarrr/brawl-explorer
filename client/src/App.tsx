@@ -33,7 +33,7 @@ export default function App() {
     setLoadingSelectedItem: setLoadingModelViewer, 
     selectItem: selectModel,
     setItemSearch: setModelSearch 
-  } = useItems(["allie_geo.glb"]);
+  } = useItems(["allie_geo.glb"], ["attack_geo.glb", "walk_geo.glb", "idle_geo.glb"]);
 
   const { 
     filteredItems: filteredTextures,
