@@ -110,6 +110,8 @@ export default function ModelViewer({ src, loaded, textureData }: ModelViewerPro
             src={src}
             camera-controls 
             touch-action
+            min-field-of-view="1deg"
+            max-field-of-view="120deg"
         />
     );
 }
