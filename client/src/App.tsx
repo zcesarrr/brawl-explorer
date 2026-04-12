@@ -16,6 +16,7 @@ import { useTheme } from "./components/theme-provider";
 import { useItems } from "./hooks/useItems";
 import { getAutoSizeString } from "./libs/models.utils";
 import ModelViewer from "./components/ModelViewer";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
 
 const excludedModels = ["attack_geo.glb", "walk_geo.glb", "idle_geo.glb", "attack_geo.glb", "win_geo.glb", "lose_geo.glb", "pushback_geo.glb"];
 
@@ -136,23 +137,31 @@ export default function App() {
                   textureData={textureLoaded}
                 />
                 <div className="absolute left-2 bottom-2">
-                  <p className="text-sm text-neutral-300 mb-1">Export as:</p>
+                  <p className="text-sm text-neutral-300 mb-1">Export model as:</p>
                   <div className="flex gap-1">
                     <ButtonGroup>
-                      <ExportButton 
-                        disabled={loadingModelViewer} 
-                        fileMetadata={selectedModel} 
-                        label="Model (.glb)"
-                      />
-                      
-                      <ExportButton 
-                        disabled={loadingSelectedTexture || !textureLoaded} 
-                        fileMetadata={textureLoaded ? {
-                          filename: `${textureLoaded.filename.split(".sctx")[0]}.png`,
-                          uri: textureLoaded.uri,
-                        } : null} 
-                        label="Texture (.png)"
-                      />
+                      <ButtonGroup>
+                        <ExportButton 
+                          disabled={loadingModelViewer} 
+                          fileMetadata={selectedModel} 
+                          label=".glb"
+                        />
+                        <ExportButton 
+                          disabled={loadingModelViewer} 
+                          fileMetadata={selectedModel} 
+                          label=".fbx"
+                        />
+                      </ButtonGroup>
+                      <ButtonGroup>
+                        <ExportButton 
+                          disabled={loadingSelectedTexture || !textureLoaded} 
+                          fileMetadata={textureLoaded ? {
+                            filename: `${textureLoaded.filename.split(".sctx")[0]}.png`,
+                            uri: textureLoaded.uri,
+                          } : null} 
+                          label="Texture (.png)"
+                        />
+                      </ButtonGroup>
                     </ButtonGroup>
                   </div>
                 </div>
