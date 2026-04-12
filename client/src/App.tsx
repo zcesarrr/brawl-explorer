@@ -17,6 +17,8 @@ import { useItems } from "./hooks/useItems";
 import { getAutoSizeString } from "./libs/models.utils";
 import ModelViewer from "./components/ModelViewer";
 
+const excludedModels = ["attack_geo.glb", "walk_geo.glb", "idle_geo.glb", "attack_geo.glb", "win_geo.glb", "lose_geo.glb", "pushback_geo.glb"];
+
 const API_URL = import.meta.env.VITE_API_URL;
 const AUTO_LOAD_TEXTURE_STORAGE = "auto_load_texture";
 
@@ -33,7 +35,7 @@ export default function App() {
     setLoadingSelectedItem: setLoadingModelViewer, 
     selectItem: selectModel,
     setItemSearch: setModelSearch 
-  } = useItems(["allie_geo.glb"], ["attack_geo.glb", "walk_geo.glb", "idle_geo.glb"]);
+  } = useItems(["allie_geo.glb"], excludedModels);
 
   const { 
     filteredItems: filteredTextures,
