@@ -21,6 +21,11 @@ RUN dpkg --add-architecture i386 \
         wine \
         wine32 \
         wine64 \
+        xorg \
+        libglu1-mesa \
+        libxi6 \
+        libxrender1 \
+        libxxf86vm1 \
     && python3 -m pip install --no-cache-dir -r src/libs/supercell-flat-converter/requirements.txt --break-system-packages \
     && wineboot --init \
     && rm -rf /var/lib/apt/lists/*

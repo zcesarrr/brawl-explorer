@@ -16,6 +16,7 @@ services:
     build: server
     volumes:
       - ./.volumes/sc3d:/app/sc3d
+      - ./.volumes/blender:/app/blender
     environment:
       - ORIGIN_ALLOWED=${SERVER_ORIGIN_ALLOWED}
       - PORT=${SERVER_PORT}
