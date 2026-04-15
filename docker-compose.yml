@@ -13,7 +13,7 @@ services:
     container_name: server
     build: server
     volumes:
-      - ./volumes/sc3d:/app/sc3d
+      - ./.volumes/sc3d:/app/sc3d
     environment:
       - ORIGIN_ALLOWED=http://localhost
       - PORT=3000
