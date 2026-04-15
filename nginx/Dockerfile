@@ -5,7 +5,7 @@ RUN corepack enable
 
 WORKDIR /app/client
 COPY client/package.json client/pnpm-lock.yaml ./
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 COPY /client .
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
