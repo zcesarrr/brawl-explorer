@@ -1,0 +1,21 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+      args:
+        - VITE_API_URL=${CLIENT_API_URL}
+    ports:
+      - 80:80
+    depends_on:
+      - server
+  
+  server:
+    container_name: server
+    build: server
+    environment:
+      - ORIGIN_ALLOWED=${SERVER_ORIGIN_ALLOWED}
+      - PORT=${SERVER_PORT}
+      - ASSETS_DIRECTORY=${SERVER_ASSETS_DIRECTORY}
+      - BLENDER_DIRECTORY=${SERVER_BLENDER_DIRECTORY}

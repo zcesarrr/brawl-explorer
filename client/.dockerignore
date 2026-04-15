@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+npm-debug.log
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Environment and secrets
+.env
+.env*
+.npmrc
+
+# Version control
+.git
+.gitignore
+
+# OS and IDE files
+.DS_Store
+.vscode/
