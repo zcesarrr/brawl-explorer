@@ -203,7 +203,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
     res.status(500).json({
         success: false,
-        error: "Something wen wrong",
+        error: "Something went wrong",
     });
 });
 

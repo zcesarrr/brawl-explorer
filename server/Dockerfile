@@ -1,6 +1,7 @@
 FROM node:24-slim AS build
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV DEBIAN_FRONTEND=noninteractive
 RUN corepack enable
 
 WORKDIR /app
@@ -10,14 +11,17 @@ COPY . .
 RUN pnpm build
 
 RUN dpkg --add-architecture i386 \
-    mkdir -p /etc/apt/keyrings \
-    wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key \
-    wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources \
-    apt-get update \ 
-    apt-get install -y \
-    sudo apt install --install-recommends winehq-devel \
-    wineboot --init \
-    python3 \
-    pip install binary-reader flatbuffers numpy \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gpg \
+        python3 \
+        python3-pip \
+        wget \
+        wine \
+        wine32 \
+        wine64 \
+    && python3 -m pip install --no-cache-dir -r src/libs/supercell-flat-converter/requirements.txt --break-system-packages \
+    && wineboot --init \
     && rm -rf /var/lib/apt/lists/*
 CMD ["pnpm", "start"]
