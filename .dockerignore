@@ -1,0 +1,6 @@
+**
+
+!client/
+!client/**
+!nginx/
+!nginx/**
