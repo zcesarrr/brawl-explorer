@@ -1,0 +1,21 @@
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - server
+  
+  server:
+    container_name: server
+    build: server
+    volumes:
+      - ./.volumes/sc3d:/app/sc3d
+    environment:
+      - ORIGIN_ALLOWED=http://localhost
+      - PORT=3000
+      - ASSETS_DIRECTORY=/app/sc3d
+      - BLENDER_DIRECTORY=/usr/bin/blender
