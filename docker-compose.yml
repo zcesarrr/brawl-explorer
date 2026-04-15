@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: nginx/Dockerfile
-      args:
-        - VITE_API_URL=${CLIENT_API_URL}
     ports:
       - 80:80
     depends_on:
@@ -16,9 +14,8 @@ services:
     build: server
     volumes:
       - ./.volumes/sc3d:/app/sc3d
-      - ./.volumes/blender:/app/blender
     environment:
-      - ORIGIN_ALLOWED=${SERVER_ORIGIN_ALLOWED}
-      - PORT=${SERVER_PORT}
-      - ASSETS_DIRECTORY=${SERVER_ASSETS_DIRECTORY}
-      - BLENDER_DIRECTORY=${SERVER_BLENDER_DIRECTORY}
+      - ORIGIN_ALLOWED=http://localhost
+      - PORT=3000
+      - ASSETS_DIRECTORY=/app/sc3d
+      - BLENDER_DIRECTORY=/usr/bin/blender

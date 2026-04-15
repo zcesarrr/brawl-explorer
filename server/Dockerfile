@@ -1,4 +1,4 @@
-FROM node:24-slim AS build
+FROM node:24-slim
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV DEBIAN_FRONTEND=noninteractive
@@ -21,11 +21,7 @@ RUN dpkg --add-architecture i386 \
         wine \
         wine32 \
         wine64 \
-        xorg \
-        libglu1-mesa \
-        libxi6 \
-        libxrender1 \
-        libxxf86vm1 \
+        blender \
     && python3 -m pip install --no-cache-dir -r src/libs/supercell-flat-converter/requirements.txt --break-system-packages \
     && wineboot --init \
     && rm -rf /var/lib/apt/lists/*

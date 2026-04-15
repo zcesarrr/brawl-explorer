@@ -7,8 +7,7 @@ WORKDIR /app/client
 COPY client/package.json client/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY /client .
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_API_URL=http://localhost/api
 RUN pnpm build
 
 FROM nginx:1.28.3-alpine-slim
