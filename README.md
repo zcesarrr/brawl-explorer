@@ -1,7 +1,7 @@
 # Brawl Explorer
 Easily explore and export Brawl Stars 3D assets!
 
-![App Screenshot](https://cdn.discordapp.com/attachments/1347393314285944962/1493009533608398899/image.png?ex=69dd68fb&is=69dc177b&hm=5201384262cdcd3e83884bfda3555c3d0ce11f4c204794069b837ee91f76dd31)
+<img width="1920" height="1078" alt="image" src="https://github.com/user-attachments/assets/ff223490-c5a5-4975-883b-e1221932bb24" />
 
 
 ## Running using Docker
