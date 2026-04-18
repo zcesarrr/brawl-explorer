@@ -1,17 +1,24 @@
 services:
-  nginx:
-    container_name: nginx
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
+  proxy:
+    container_name: proxy
+    build: proxy
     ports:
       - 80:80
     depends_on:
+      - client
       - server
-  
+
+  client:
+    container_name: client
+    build: client
+    expose:
+      - 3001
+
   server:
     container_name: server
     build: server
+    expose:
+      - 3000
     volumes:
       - ./.volumes/sc3d:/app/sc3d
     environment:
