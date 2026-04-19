@@ -1,0 +1,21 @@
+:80 {
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+    
+    root * /srv
+
+    handle_path /api/* {
+        reverse_proxy server:3000
+    }
+
+    handle {
+        encode gzip zstd
+
+        try_files {path} /index.html
+
+        file_server
+    }
+}
