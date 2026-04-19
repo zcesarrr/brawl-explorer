@@ -2,8 +2,6 @@
 
 !client/
 !client/**
-!nginx/
-!nginx/**
 
 client/node_modules/
 client/dist/

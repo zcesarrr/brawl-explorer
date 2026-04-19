@@ -1,7 +1,9 @@
 services:
-  proxy:
-    container_name: proxy
-    image: caddy:2.11-alpine
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
     ports:
       - 80:80
       - 443:443
@@ -10,14 +12,7 @@ services:
       - ./caddy/caddy_data:/data
       - ./caddy/caddy_config:/config
     depends_on:
-      - client
       - server
-
-  client:
-    container_name: client
-    build: client
-    expose:
-      - 3001
 
   server:
     container_name: server
